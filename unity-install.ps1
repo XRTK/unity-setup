@@ -179,7 +179,7 @@ if ( -not (Test-Path -Path $modulesPath)) {
     Write-Error "Failed to resolve modules path at $modulesPath"
 
     if (Test-Path -Path $editorPath) {
-        ls $editorPath
+        Get-ChildItem $editorPath
         # Remove-Item $editorPath -Recurse -Force
     }
 
