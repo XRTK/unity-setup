@@ -1,0 +1,25 @@
+{
+  "name": "unity-setup",
+  "version": "1.0.0",
+  "description": "An atomic GitHub action to download and install the Unity Editor for runners.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XRTK/unity-setup.git"
+  },
+  "keywords": [],
+  "author": "Stephen Hodgson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/XRTK/unity-setup/issues"
+  },
+  "homepage": "https://github.com/XRTK/unity-setup#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@actions/io": "^1.1.2"
+  }
+}
