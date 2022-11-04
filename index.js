@@ -7,7 +7,7 @@ const main = async () => {
     try {
         var modules = core.getInput('modules');
         var versionFilePath = core.getInput('version-file-path');
-        var args = `-modulesList \"${modules}\" -projectPath \"${versionFilePath}\"`;
+        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
         var exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);

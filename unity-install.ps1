@@ -1,21 +1,21 @@
 param(
-    [String]$versionFile,
+    [String]$versionFilePath,
     [String]$modulesList
 )
 # Unity Editor Installation
 Write-Host "::group::Unity Editor Installation"
 $modules = $modulesList.Split(" ")
 
-if ( -not (Test-Path -Path $versionFile) ) {
-    Write-Error "Failed to find a valid project version file at `"$versionFile`""
+if ( -not (Test-Path -Path $versionFilePath) ) {
+    Write-Error "Failed to find a valid project version file at `"$versionFilePath`""
     exit 1
 }
 
-$projectPath = (Get-Item $versionFile).Directory.Parent.FullName
+$projectPath = (Get-Item $versionFilePath).Directory.Parent.FullName
 Write-Host "Unity project path: `"$projectPath`""
 "UNITY_PROJECT_PATH=$projectPath" >> $env:GITHUB_ENV
 
-$version = Get-Content $versionFile
+$version = Get-Content $versionFilePath
 $pattern = '(?<version>(?:(?<major>\d+)\.)?(?:(?<minor>\d+)\.)?(?:(?<patch>\d+[fab]\d+)\b))|((?:\((?<revision>\w+))\))'
 $vMatches = [regex]::Matches($version, $pattern)
 $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
