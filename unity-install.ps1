@@ -3,7 +3,6 @@ param(
     [String]$modulesList
 )
 # Unity Editor Installation
-Write-Host "::group::Unity Editor Installation"
 $modules = $modulesList.Split(" ")
 
 if ( -not (Test-Path -Path $versionFilePath) ) {
@@ -200,5 +199,4 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
 Write-Host ""
 Write-Host "UnityEditor path set to: $editorPath"
 "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
-Write-Host "::endgroup::"
 exit 0
