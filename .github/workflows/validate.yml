@@ -18,7 +18,8 @@ jobs:
   validate:
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix: [ubuntu-latest, windows-latest, macos-latest]
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
 
     steps:
       - name: checkout self
