@@ -16,4 +16,4 @@ outputs:
     description: 'The path to the unity project'
 runs:
   using: 'node16'
-  main: 'dist\index.js'
+  main: 'dist/index.js'
