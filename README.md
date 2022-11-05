@@ -10,7 +10,7 @@ An atomic GitHub action to download and install the Unity Editor for runners.
 
 Part of the [Mixed Reality Toolkit (XRTK)](https://github.com/XRTK) open source project.
 
-> This action does require the use of XRTK in your Unity project.
+> This action does not require the use of XRTK in your Unity project.
 
 ## Related Github Actions
 
