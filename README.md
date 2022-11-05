@@ -29,18 +29,16 @@ jobs:
         runner: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.runner }}
 
-    outputs:
-      editor-path: ${{ steps.unity-setup.outputs.editor-path }}
-      project-path: ${{ steps.unity-setup.outputs.project-path }}
-
     steps:
       - uses: actions/checkout@v3
 
       - id: unity-setup
         uses: xrtk/unity-setup@v1
           with:
-            modules: 'android ios'
+            modules: 'android ios' #Optional, overrides the default platform specific module installs.
+            #version-file-path: '**/ProjectSettings/ProjectVersion.txt' # Optional
 
-        run: echo ${{ steps.unity-setup.outputs.editor-path }}
-        run: echo ${{ steps.unity-setup.outputs.project-path }}
+      - run: |
+          echo "${{ env.UNITY_EDITOR_PATH }}"
+          echo "${{ env.UNITY_PROJECT_PATH }}"
 ```

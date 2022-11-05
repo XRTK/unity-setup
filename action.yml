@@ -12,10 +12,8 @@ inputs:
 outputs:
   editor-path:
     description: 'The path to the Unity Editor'
-    #value: ${{ steps.validate.outputs.editor-path }}
   project-path:
     description: 'The path to the unity project'
-    #value: ${{ steps.validate.outputs.project-path }}
 runs:
   using: 'node16'
   main: 'index.js'
