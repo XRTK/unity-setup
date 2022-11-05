@@ -1,0 +1,42 @@
+name: validate
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+
+jobs:
+  validate:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+
+    steps:
+      - name: checkout self
+        uses: actions/checkout@v3
+
+      - run: npm install
+
+      - name: checkout test project
+        uses: actions/checkout@v3
+        with:
+          repository: xrtk/com.xrtk.test
+          path: test-project
+
+      - uses: ./
+        with:
+          version-file-path: 'test-project/**/ProjectSettings/ProjectVersion.txt'
+
+      - run: |
+          echo "${{ env.UNITY_EDITOR_PATH }}"
+          echo "${{ env.UNITY_PROJECT_PATH }}"
