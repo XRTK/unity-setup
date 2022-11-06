@@ -4124,11 +4124,7 @@ const main = async () => {
 
         console.log(`::group::Run xrtk/unity-setup`);
 
-        try{
-            exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
-        } catch {
-            // Nothing
-        }
+        exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
 
         console.log(`::endgroup::`);
 
