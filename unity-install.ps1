@@ -35,7 +35,10 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
     #"Unity Hub.exe" -- --headless help
     #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
-        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList (@('--','--headless') + $args.Split(" "))
+        $argList = (@('--','--headless') + $args.Split(" "))
+        Write-Host "::group::Run $hubpath $argList"
+        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
+        Write-Host "::endgroup::"
         $p.WaitForExit()
     }
 }
@@ -51,7 +54,10 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
-        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList (@('--','--headless') + $args.Split(" "))
+        $argList = (@('--','--headless') + $args.Split(" "))
+        Write-Host "::group::Run $hubpath $argList"
+        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
+        Write-Host "::endgroup::"
         $p.WaitForExit()
     }
 }
@@ -67,18 +73,22 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
     # /UnityHub.AppImage --headless help
     # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
     function Invoke-UnityHub {
-        xvfb-run --auto-servernum "$hubPath" --headless $args.Split(" ")
+        $argsList = $args.Split(" ")
+        Write-Host "::group::Run $hubpath --headless $argsList"
+        xvfb-run --auto-servernum "$hubPath" --headless $argsList
+        Write-Host "::endgroup::"
     }
 }
 
 # Install hub if not found
 if ( -not (Test-Path -Path "$hubPath") ) {
-    Write-Host "$(Get-Date): Downloading Unity Hub..."
+    Write-Host "::group::Downloading Unity Hub..."
     $baseUrl = "https://public-cdn.cloud.unity3d.com/hub/prod";
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-    Write-Host "$(Get-Date): Download Complete, Starting installation..."
+    Write-Host "::endgroup::"
+    Write-Host "::group::Installing Unity Hub..."
 
     if ((-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT")) {
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
@@ -119,6 +129,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
     }
+
+    Write-Host "::endgroup::"
 }
 
 if ( -not (Test-Path "$hubPath") ) {
@@ -138,7 +150,7 @@ Write-Host ""
 $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
 if ( -not (Test-Path -Path $editorPath)) {
-    Write-Host "Installing $unityVersion ($unityVersionChangeSet)..."
+    Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
 
     $addModules = @()
@@ -155,7 +167,7 @@ if ( -not (Test-Path -Path $editorPath)) {
     foreach ($module in $modules) {
         $installArgs += '-m'
         $installArgs += $module
-        Write-Host "  with module: $module"
+        Write-Host "  > with module: $module"
     }
 
     $installArgsString = $installArgs -join " "
@@ -194,7 +206,7 @@ Write-Host ""
 foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsHashTable)) {
     if ( ($module.category -eq 'Platforms') -and ($module.visible -eq $true) ) {
         if ( -not ($modules -contains $module.id) ) {
-            Write-Host "additional module option: " $module.id
+            Write-Host "  > additional module option: " $module.id
         }
     }
 }
