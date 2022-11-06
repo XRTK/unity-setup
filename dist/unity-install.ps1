@@ -135,7 +135,7 @@ Write-Host "Unity Hub found at `"$hubPath`""
 
 # Write-Host "Editor root path currently set to: `"$editorRootPath`""
 
-Write-Host "::group::Unity Hub Options:"
+Write-Host "::group::Unity Hub Options"
 Invoke-UnityHub help
 Write-Host "::endgroup::"
 
@@ -166,6 +166,7 @@ if ( -not (Test-Path -Path $editorPath)) {
 
     Write-Host "::group::Run $installArgsString"
     Invoke-UnityHub $installArgsString
+    Write-Host ""
     Write-Host "::endgroup::"
 }
 
