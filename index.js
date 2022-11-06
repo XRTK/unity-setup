@@ -10,7 +10,17 @@ const main = async () => {
         var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
-        var exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
+        var exitCode = 0;
+
+        console.log(`::group:: Unity Setup`);
+
+        try{
+            exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
+        } catch {
+            // Nothing
+        }
+
+        console.log(`::endgroup::`);
 
         if (exitCode != 0) {
             throw Error(`Unity Installation Failed! exitCode: ${exitCode}`)
