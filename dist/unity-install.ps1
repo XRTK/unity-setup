@@ -36,9 +36,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
     #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
-        Write-Host "::group::Run $hubpath $argList"
         $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
-        Write-Host "::endgroup::"
         $p.WaitForExit()
     }
 }
@@ -55,9 +53,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
-        Write-Host "::group::Run $hubpath $argList"
         $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
-        Write-Host "::endgroup::"
         $p.WaitForExit()
     }
 }
@@ -74,20 +70,17 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
     # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
     function Invoke-UnityHub {
         $argsList = $args.Split(" ")
-        Write-Host "::group::Run $hubpath --headless $argsList"
         xvfb-run --auto-servernum "$hubPath" --headless $argsList
-        Write-Host "::endgroup::"
     }
 }
 
 # Install hub if not found
 if ( -not (Test-Path -Path "$hubPath") ) {
-    Write-Host "::group::Downloading Unity Hub..."
+    Write-Host "Downloading Unity Hub..."
     $baseUrl = "https://public-cdn.cloud.unity3d.com/hub/prod";
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-    Write-Host "::endgroup::"
     Write-Host "::group::Installing Unity Hub..."
 
     if ((-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT")) {
@@ -139,13 +132,12 @@ if ( -not (Test-Path "$hubPath") ) {
 }
 
 Write-Host "Unity Hub found at `"$hubPath`""
-Write-Host ""
 
-Write-Host "Editor root path currently set to: `"$editorRootPath`""
-Write-Host ""
+# Write-Host "Editor root path currently set to: `"$editorRootPath`""
 
+Write-Host "::group::Unity Hub Options:"
 Invoke-UnityHub help
-Write-Host ""
+Write-Host "::endgroup::"
 
 $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
@@ -172,12 +164,13 @@ if ( -not (Test-Path -Path $editorPath)) {
 
     $installArgsString = $installArgs -join " "
 
+    Write-Host "::group::Run $installArgsString"
     Invoke-UnityHub $installArgsString
+    Write-Host "::endgroup::"
 }
 
-Write-Host ""
+Write-Host "Installed Editors:"
 Invoke-UnityHub editors -i
-Write-Host ""
 
 if ( -not (Test-Path -Path $editorPath) ) {
     Write-Error "Failed to validate installed editor path at $editorPath"
@@ -188,8 +181,7 @@ $modulesPath = '{0}{1}{2}modules.json' -f $editorRootPath,$UnityVersion,[IO.Path
 
 if ( -not (Test-Path -Path $modulesPath)) {
     $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
-    Write-Host "Cleaning up invalid installation under $editorPath"
-
+    #Write-Host "Cleaning up invalid installation under $editorPath"
     Write-Error "Failed to resolve modules path at $modulesPath"
 
     if (Test-Path -Path $editorPath) {
@@ -201,7 +193,6 @@ if ( -not (Test-Path -Path $modulesPath)) {
 }
 
 Write-Host "Modules Manifest: "$modulesPath
-Write-Host ""
 
 foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsHashTable)) {
     if ( ($module.category -eq 'Platforms') -and ($module.visible -eq $true) ) {
@@ -215,8 +206,8 @@ $envEditorPath = $env:UNITY_EDITOR_PATH
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
-    Write-Host "UnityEditor path set to: $editorPath"
     "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
+    Write-Host "UnityEditor path set to: $editorPath"
 }
 
 exit 0

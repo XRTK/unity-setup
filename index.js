@@ -12,7 +12,7 @@ const main = async () => {
         var install = path.resolve(__dirname, 'unity-install.ps1');
         var exitCode = 0;
 
-        console.log(`::group:: Unity Setup`);
+        console.log(`::group::Run xrtk/unity-setup`);
 
         try{
             exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
