@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v2
+        uses: xrtk/unity-setup@v3
           with:
             modules: 'android ios' #Optional, overrides the default platform specific module installs.
             #version-file-path: '**/ProjectSettings/ProjectVersion.txt' # Optional
