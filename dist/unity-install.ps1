@@ -112,6 +112,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo cp -rf "`"$dmgAppPath`"" "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
+        chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
