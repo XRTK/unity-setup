@@ -111,6 +111,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         Write-Host $dmgAppPath
         sudo cp -rf "`"$dmgAppPath`"" "/Applications"
         hdiutil unmount $dmgVolume
+        sudo mkdir -p "/Library/Application Support/Unity"
+        sudo chmod 775 "/Library/Application Support/Unity"
+        touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
         mkdir -pv "$HOME/Unity Hub" "$HOME/.config/Unity Hub" "$editorRootPath"
