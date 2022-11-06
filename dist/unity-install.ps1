@@ -109,6 +109,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         Write-Host $dmgVolume
         $dmgAppPath = (find "$DMGVolume" -name "*.app" -depth 1)
         Write-Host $dmgAppPath
+        sudo mkdir "/Applications/Unity"
+        chmod 775 "/Applications/Unity"
         sudo cp -rf "`"$dmgAppPath`"" "/Applications"
         hdiutil unmount $dmgVolume
     }
