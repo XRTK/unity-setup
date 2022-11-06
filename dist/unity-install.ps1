@@ -36,7 +36,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
     #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
-        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
+        $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
 }
@@ -53,7 +53,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
-        $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
+        $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
 }
@@ -164,7 +164,7 @@ if ( -not (Test-Path -Path $editorPath)) {
 
     $installArgsString = $installArgs -join " "
 
-    Write-Host "::group::Run $installArgsString"
+    Write-Host "::group::Run unity-hub $installArgsString"
     Invoke-UnityHub $installArgsString
     Write-Host ""
     Write-Host "::endgroup::"
