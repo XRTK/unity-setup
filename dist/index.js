@@ -4159,6 +4159,8 @@ const main = async () => {
             var targets = buildTargets.split(' ');
 
             for (var target in targets) {
+                core.debug(`target: ${target}`);
+
                 var module = moduleMap[target];
 
                 if (module === undefined) {
@@ -4179,7 +4181,7 @@ const main = async () => {
             // search for license file version
             var exeDir = path.resolve(process.cwd());
             core.debug(`exeDir: ${exeDir}`);
-            versionFilePath = resolve(exeDir, 'ProjectSettings', 'ProjectVersion.txt');
+            versionFilePath = resolve(exeDir, '**', 'ProjectSettings', 'ProjectVersion.txt');
             core.debug(`version file path: ${versionFilePath}`);
         }
 
