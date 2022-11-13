@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        runner:
+        include:
           - os: ubuntu-latest
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
