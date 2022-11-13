@@ -20,12 +20,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            build-targets: 'StandaloneLinux64 Android iOS'
-          - os: windows-latest
+          - os: windows
             build-targets: 'StandaloneWindows64 Android iOS'
-          - os: macos-latest
-            build-targets: 'StandaloneOSX Android iOS'
+          # - os: ubuntu-latest
+          #   build-targets: 'StandaloneLinux64 Android iOS'
+          # - os: macos-latest
+          #   build-targets: 'StandaloneOSX Android iOS'
 
     steps:
       - name: checkout self
