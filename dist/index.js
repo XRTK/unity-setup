@@ -4111,24 +4111,94 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(186);
 const exec = __nccwpck_require__(514);
 const io = __nccwpck_require__(436);
+const { resolve } = __nccwpck_require__(17);
 const path = __nccwpck_require__(17);
+const os = __nccwpck_require__(37);
 
 const main = async () => {
     try {
-        var modules = core.getInput('modules');
+        var modules = '';
+        var buildTargets = core.getInput('build-targets');
+
+        if (!buildTargets) {
+           modules = core.getInput('modules');
+        } else {
+            var moduleMap = undefined;
+
+            const osType = os.type();
+            if (osType == 'Linux') {
+                moduleMap = {
+                    "StandaloneLinux64": "linux-il2cpp",
+                    "Android": "android",
+                    "WebGL": "webgl",
+                    "iOS": "ios",
+                };
+            } else if (osType == 'Darwin') {
+                moduleMap = {
+                    "StandaloneOSX": "mac-il2cpp",
+                    "iOS": "ios",
+                    "Android": "android",
+                    "tvOS": "appletv",
+                    "StandaloneLinux64": "linux-il2cpp",
+                };
+            } else if (osType == 'Windows_NT') {
+                moduleMap = {
+                    "StandaloneWindows64": "windows-il2cpp",
+                    "WSAPlayer": "universal-windows-platform",
+                    "Android": "android",
+                    "iOS": "ios",
+                    "tvOS": "appletv",
+                    "StandaloneLinux64": "linux-il2cpp",
+                    "Lumin": "lumin",
+                    "WebGL": "webgl",
+                };
+            } else {
+                throw Error(`${osType} not supported`);
+            }
+
+            var targets = buildTargets.split(' ');
+
+            for (var target in targets) {
+                var module = moduleMap[target];
+
+                if (module === undefined) {
+                    core.warning(`${target} not a valid build-target`);
+                    continue;
+                }
+
+                modules += `${module} `;
+                core.debug(`  ${target} -> ${module}`);
+            }
+
+            modules = modules.trim();
+        }
+
         var versionFilePath = core.getInput('version-file-path');
+
+        if (!versionFilePath) {
+            // search for license file version
+            var exeDir = path.resolve(process.cwd());
+            core.debug(`exeDir: ${exeDir}`);
+            versionFilePath = resolve(exeDir, 'ProjectSettings', 'ProjectVersion.txt');
+            core.debug(`version file path: ${versionFilePath}`);
+        }
+
+        core.debug(`modules: ${modules}`);
+        core.debug(`versionFilePath: ${versionFilePath}`);
+
         var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = __nccwpck_require__.ab + "unity-install.ps1";
         var exitCode = 0;
 
-        console.log(`::group::Run xrtk/unity-setup`);
         exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
-        console.log(`::endgroup::`);
 
         if (exitCode != 0) {
             throw Error(`Unity Installation Failed! exitCode: ${exitCode}`)
         }
+
+        core.setOutput('editor-path', process.env.UNITY_EDITOR_PATH);
+        core.setOutput('project-path', process.env.UNITY_PROJECT_PATH);
     } catch (error) {
         core.setFailed(error.message);
     }

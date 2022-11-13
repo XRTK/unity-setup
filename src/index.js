@@ -73,6 +73,9 @@ const main = async () => {
             core.debug(`version file path: ${versionFilePath}`);
         }
 
+        core.debug(`modules: ${modules}`);
+        core.debug(`versionFilePath: ${versionFilePath}`);
+
         var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
