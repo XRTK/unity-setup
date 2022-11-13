@@ -4237,7 +4237,7 @@ const findFile = async (dir, filePath) => {
 
     if (matchedFiles.length == 0) {
         for(const subDir of directories) {
-            const nestedMatches = await findByExtension(subDir, filePath);
+            const nestedMatches = await findFile(subDir, filePath);
 
             for (const nestedMatch of nestedMatches) {
                 matchedFiles.push(nestedMatch);
