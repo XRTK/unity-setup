@@ -47,5 +47,5 @@ jobs:
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"
           echo "${{ env.UNITY_PROJECT_PATH }}"
-          echo "${{ steps.unity-validate.outputs.editor-path }}"
-          echo "${{ steps.unity-validate.outputs.project-path }}"
+          echo "${{ steps.unity-setup.outputs.editor-path }}"
+          echo "${{ steps.unity-setup.outputs.project-path }}"

@@ -39,14 +39,14 @@ jobs:
       - uses: actions/checkout@v3
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v4
+        uses: xrtk/unity-setup@v5
         with:
           modules: '${{ matrix.build-targets }}' #Optional, overrides the default platform specific module installs.
-          #version-file-path: '**/ProjectSettings/ProjectVersion.txt' # Optional
+          #version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"
           echo "${{ env.UNITY_PROJECT_PATH }}"
-          echo "${{ steps.unity-validate.outputs.editor-path }}"
-          echo "${{ steps.unity-validate.outputs.project-path }}"
+          echo "${{ steps.unity-setup.outputs.editor-path }}"
+          echo "${{ steps.unity-setup.outputs.project-path }}"
 ```
