@@ -51,7 +51,7 @@ const main = async () => {
             var targets = buildTargets.split(' ');
             core.debug(`targets: ${targets}`);
 
-            for (var target in targets) {
+            for (const target of targets) {
                 core.debug(`target: ${target}`);
 
                 var module = moduleMap[target];
