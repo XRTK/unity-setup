@@ -74,7 +74,7 @@ const main = async () => {
             // search for license file version
             var exeDir = path.resolve(process.cwd());
             core.debug(`exeDir: ${exeDir}`);
-            versionFilePath = resolve(exeDir, '**', 'ProjectSettings', 'ProjectVersion.txt');
+            versionFilePath = findFile(exeDir, 'ProjectVersion.txt');
             core.debug(`version file path: ${versionFilePath}`);
         }
 
@@ -101,3 +101,34 @@ const main = async () => {
 
 // Call the main function to run the action
 main();
+
+const findFile = async (dir, filePath) => {
+    const directories = [];
+    const matchedFiles = [];
+    const files = await readdir(dir);
+
+    for (const file of files) {
+        const item = path.resolve(dir, file);
+
+        if (fs.statSync(`${dir}/${file}`).isDirectory()) {
+            directories.push(item);
+        } else if (file.endsWith(filePath)) {
+            core.debug(`--> Found! ${item}`);
+            matchedFiles.push(item);
+            break;
+        }
+    }
+
+    if (matchedFiles.length == 0) {
+        for(const subDir of directories) {
+            const nestedMatches = await findByExtension(subDir, filePath);
+
+            for (const nestedMatch of nestedMatches) {
+                matchedFiles.push(nestedMatch);
+                break;
+            }
+        }
+    }
+
+    return matchedFiles;
+};
