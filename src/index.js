@@ -68,7 +68,9 @@ const main = async () => {
         if (!versionFilePath) {
             // search for license file version
             var exeDir = path.resolve(process.cwd());
+            core.debug(`exeDir: ${exeDir}`);
             versionFilePath = resolve(exeDir, 'ProjectSettings', 'ProjectVersion.txt');
+            core.debug(`version file path: ${versionFilePath}`);
         }
 
         var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;

@@ -42,7 +42,7 @@ jobs:
       - uses: ./ # xrtk/unity-setup
         id: unity-setup
         with:
-          modules: '${{ matrix.build-targets }}'
+          build-targets: '${{ matrix.build-targets }}'
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"
