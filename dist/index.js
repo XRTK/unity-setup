@@ -4119,9 +4119,11 @@ const main = async () => {
     try {
         var modules = '';
         var buildTargets = core.getInput('build-targets');
+        core.debug(`buildTargets: ${buildTargets}`);
 
         if (!buildTargets) {
            modules = core.getInput('modules');
+           core.debug(`modules: ${modules}`);
         } else {
             var moduleMap = undefined;
 
@@ -4157,6 +4159,7 @@ const main = async () => {
             }
 
             var targets = buildTargets.split(' ');
+            core.debug(`targets: ${targets}`);
 
             for (var target in targets) {
                 core.debug(`target: ${target}`);
