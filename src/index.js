@@ -1,8 +1,8 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const io = require('@actions/io');
-const { resolve } = require('path');
 const path = require('path');
+const { readdir } = require('fs/promises');
 const os = require('os');
 
 const main = async () => {

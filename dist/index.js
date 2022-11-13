@@ -3995,6 +3995,14 @@ module.exports = require("fs");
 
 /***/ }),
 
+/***/ 292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
+
+/***/ }),
+
 /***/ 685:
 /***/ ((module) => {
 
@@ -4111,8 +4119,8 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(186);
 const exec = __nccwpck_require__(514);
 const io = __nccwpck_require__(436);
-const { resolve } = __nccwpck_require__(17);
 const path = __nccwpck_require__(17);
+const { readdir } = __nccwpck_require__(292);
 const os = __nccwpck_require__(37);
 
 const main = async () => {
