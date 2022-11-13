@@ -4184,7 +4184,7 @@ const main = async () => {
             // search for license file version
             var exeDir = path.resolve(process.cwd());
             core.debug(`exeDir: ${exeDir}`);
-            versionFilePath = findFile(exeDir, 'ProjectVersion.txt');
+            versionFilePath = await findFile(exeDir, 'ProjectVersion.txt');
             core.debug(`version file path: ${versionFilePath}`);
         }
 
@@ -4208,9 +4208,6 @@ const main = async () => {
         core.setFailed(error.message);
     }
 }
-
-// Call the main function to run the action
-main();
 
 const findFile = async (dir, filePath) => {
     const directories = [];
@@ -4242,6 +4239,10 @@ const findFile = async (dir, filePath) => {
 
     return matchedFiles;
 };
+
+
+// Call the main function to run the action
+main();
 })();
 
 module.exports = __webpack_exports__;
