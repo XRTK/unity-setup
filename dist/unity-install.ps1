@@ -171,6 +171,33 @@ if ( -not (Test-Path -Path $editorPath)) {
     Invoke-UnityHub $installArgsString
     Write-Host ""
     Write-Host "::endgroup::"
+} else {
+    Write-Host "Intalling modules for $unityVersion ($unityVersionChangeSet)"
+    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
+
+    $addModules = @()
+
+    foreach ($module in $modules) {
+        if ($module -eq 'android') {
+            $addmodules += 'android-open-jdk'
+            $addmodules += 'android-sdk-ndk-tools'
+        }
+    }
+
+    $modules += $addModules
+
+    foreach ($module in $modules) {
+        $installArgs += '-m'
+        $installArgs += $module
+        Write-Host "  > with module: $module"
+    }
+
+    $installArgsString = $installArgs -join " "
+
+    Write-Host "::group::Run unity-hub $installArgsString"
+    Invoke-UnityHub $installArgsString
+    Write-Host ""
+    Write-Host "::endgroup::"
 }
 
 Write-Host "Installed Editors:"

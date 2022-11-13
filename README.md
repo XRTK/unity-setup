@@ -24,19 +24,25 @@ Part of the [Mixed Reality Toolkit (XRTK)](https://github.com/XRTK) open source 
 jobs:
   setup-unity:
   strategy:
-      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    strategy:
       matrix:
-        runner: [ ubuntu-latest, windows-latest, macos-latest ]
-    runs-on: ${{ matrix.runner }}
+        include:
+          - os: ubuntu-latest
+            build-targets: 'StandaloneLinux64 Android iOS'
+          - os: windows-latest
+            build-targets: 'StandaloneWindows64 Android iOS'
+          - os: macos-latest
+            build-targets: 'StandaloneOSX Android iOS'
 
     steps:
       - uses: actions/checkout@v3
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v4
-          with:
-            modules: 'android ios' #Optional, overrides the default platform specific module installs.
-            #version-file-path: '**/ProjectSettings/ProjectVersion.txt' # Optional
+        uses: xrtk/unity-setup@v5
+        with:
+          modules: '${{ matrix.build-targets }}' #Optional, overrides the default platform specific module installs.
+          #version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"

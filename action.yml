@@ -1,19 +1,19 @@
 name: 'Unity Setup'
 description: 'Installs the Unity Editor and modules based on the build target and project settings.'
 inputs:
-  modules:
-    description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
-    required: false
-    default: ''
   version-file-path:
     description: 'Optional, specify a path to search for the unity project version text file. Use this if step fails to find a valid project version file.'
     required: false
-    default: '**/ProjectSettings/ProjectVersion.txt'
-outputs:
-  editor-path:
-    description: 'The path to the Unity Editor'
-  project-path:
-    description: 'The path to the unity project'
+    default: ''
+  build-targets:
+    description: 'Optional, specify the build targets to install for (i.e "StandaloneWindows64 WSAPlayer StandaloneOSX iOS StandaloneLinux64 Android Lumin WebGL")'
+    required: false
+    default: ''
+  modules:
+    deprecationMessage: 'Use build-targets instead'
+    description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
+    required: false
+    default: ''
 runs:
   using: 'node16'
   main: 'dist/index.js'

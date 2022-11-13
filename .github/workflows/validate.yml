@@ -19,7 +19,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        include:
+          - os: ubuntu-latest
+            build-targets: 'StandaloneLinux64 Android iOS'
+          - os: windows-latest
+            build-targets: 'StandaloneWindows64 Android iOS'
+          - os: macos-latest
+            build-targets: 'StandaloneOSX Android iOS'
 
     steps:
       - name: checkout self
@@ -33,9 +39,10 @@ jobs:
           repository: xrtk/com.xrtk.test
           path: test-project
 
-      - uses: ./
+      - uses: ./ # xrtk/unity-setup
+        id: unity-setup
         with:
-          version-file-path: 'test-project/**/ProjectSettings/ProjectVersion.txt'
+          build-targets: '${{ matrix.build-targets }}'
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"
