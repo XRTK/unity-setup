@@ -21,11 +21,11 @@ jobs:
       matrix:
         runner:
           - os: ubuntu-latest
-            build-targets: 'StandaloneLinux64 Android iOS'
+            build-targets: [ StandaloneLinux64, Android, iOS ]
           - os: windows-latest
-            build-targets: 'StandaloneWindows64 Android iOS'
+            build-targets: [ StandaloneWindows64, Android, iOS ]
           - os: macos-latest
-            build-targets: 'StandaloneOSX Android iOS'
+            build-targets: [ StandaloneOSX, Android, iOS ]
 
     steps:
       - name: checkout self
