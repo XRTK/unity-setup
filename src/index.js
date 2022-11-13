@@ -2,6 +2,7 @@ const core = require('@actions/core');
 const exec = require('@actions/exec');
 const io = require('@actions/io');
 const path = require('path');
+const fs = require("fs");
 const { readdir } = require('fs/promises');
 const os = require('os');
 
