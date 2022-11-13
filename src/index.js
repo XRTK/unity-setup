@@ -92,9 +92,6 @@ const main = async () => {
         if (exitCode != 0) {
             throw Error(`Unity Installation Failed! exitCode: ${exitCode}`)
         }
-
-        core.setOutput('editor-path', process.env.UNITY_EDITOR_PATH);
-        core.setOutput('project-path', process.env.UNITY_PROJECT_PATH);
     } catch (error) {
         core.setFailed(error.message);
     }
