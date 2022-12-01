@@ -119,7 +119,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt-get update
-        sudo apt-get install unityhub
+        sudo apt-get install unityhub libfuse2
 
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
