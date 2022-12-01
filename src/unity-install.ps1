@@ -116,12 +116,11 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
-        mkdir -pv "$HOME/Unity Hub" "$HOME/.config/Unity Hub" "$editorRootPath"
+        sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
+        wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt-get update
-        sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2
+        sudo apt-get install unityhub
 
-        #https://www.linuxdeveloper.space/install-unity-linux/
-        $wc.DownloadFile("$baseUrl/UnityHub.AppImage", "$hubPath")
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
     }
