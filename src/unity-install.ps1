@@ -117,11 +117,13 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
         #sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.10_amd64.deb
-        sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
+        #sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
-        sudo apt-get update
+        sudo apt update
         sudo apt-get install unityhub
-        unityhub --version
+        which unityhub
+        locate unityhub
+        dpkg -L unityhub
     }
 
     Write-Host "::endgroup::"
