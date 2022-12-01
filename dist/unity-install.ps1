@@ -121,7 +121,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt-get update
         sudo apt-get install unityhub
-        dpkg --contents unityhub
+        unityhub --version
     }
 
     Write-Host "::endgroup::"
