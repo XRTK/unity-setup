@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
