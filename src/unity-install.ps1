@@ -116,18 +116,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
-        #Lib issue Ubuntu
-        sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.10_amd64.deb
-
-        #Fuse issue Ubuntu
-        sudo apt install fuse libfuse2
-        sudo modprobe fuse
-        sudo groupadd fuse
-        sudo usermod -a -G fuse $USER
-
-        #Install unityhub
-        sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
-        wget -qO - https://hub.unity3d.com/linux/keys/public | sudo tee /etc/apt/trusted.gpg.d/unityhub.asc
+        wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
         sudo apt-get install unityhub
     }
