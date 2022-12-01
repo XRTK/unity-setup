@@ -70,7 +70,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
     # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
     function Invoke-UnityHub {
         $argsList = $args.Split(" ")
-        xvfb-run --auto-servernum "$hubPath" --headless $argsList
+        xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless $argsList
     }
 }
 
