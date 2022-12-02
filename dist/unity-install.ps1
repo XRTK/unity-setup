@@ -29,7 +29,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
     $editorFileEx = "\Editor\Unity.exe"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
-        $modules = @('windows-il2cpp', 'universal-windows-platform', 'lumin', 'webgl', 'android', 'ios')
+        $modules = @('windows-il2cpp', 'universal-windows-platform', 'android', 'ios')
     }
 
     #"Unity Hub.exe" -- --headless help
@@ -46,7 +46,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
-        $modules = @('mac-il2cpp', 'ios', 'lumin', 'webgl', 'android')
+        $modules = @('mac-il2cpp', 'ios', 'android')
     }
 
     # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
@@ -63,7 +63,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
     $editorFileEx = "/Editor/Unity"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
-        $modules = @('linux-il2cpp', 'webgl', 'android', 'ios')
+        $modules = @('linux-il2cpp', 'android', 'ios')
     }
 
     # /UnityHub.AppImage --headless help
