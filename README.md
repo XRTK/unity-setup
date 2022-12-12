@@ -41,7 +41,7 @@ jobs:
       - id: unity-setup
         uses: xrtk/unity-setup@v6
         with:
-          modules: '${{ matrix.build-targets }}' #Optional, overrides the default platform specific module installs.
+          build-targets: ${{ matrix.build-targets }} #Optional, overrides the default platform specific module installs.
           #version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional
 
       - run: |
