@@ -4127,65 +4127,60 @@ const os = __nccwpck_require__(37);
 const main = async () => {
     try {
         var modules = '';
+        var moduleMap = undefined;
         var buildTargets = core.getInput('build-targets');
+
         core.debug(`buildTargets: ${buildTargets}`);
 
-        if (!buildTargets) {
-           modules = core.getInput('modules');
-           core.debug(`modules: ${modules}`);
+        const osType = os.type();
+        if (osType == 'Linux') {
+            moduleMap = {
+                "StandaloneLinux64": "linux-il2cpp",
+                "Android": "android",
+                "WebGL": "webgl",
+                "iOS": "ios",
+            };
+        } else if (osType == 'Darwin') {
+            moduleMap = {
+                "StandaloneOSX": "mac-il2cpp",
+                "iOS": "ios",
+                "Android": "android",
+                "tvOS": "appletv",
+                "StandaloneLinux64": "linux-il2cpp",
+            };
+        } else if (osType == 'Windows_NT') {
+            moduleMap = {
+                "StandaloneWindows64": "windows-il2cpp",
+                "WSAPlayer": "universal-windows-platform",
+                "Android": "android",
+                "iOS": "ios",
+                "tvOS": "appletv",
+                "StandaloneLinux64": "linux-il2cpp",
+                "Lumin": "lumin",
+                "WebGL": "webgl",
+            };
         } else {
-            var moduleMap = undefined;
-
-            const osType = os.type();
-            if (osType == 'Linux') {
-                moduleMap = {
-                    "StandaloneLinux64": "linux-il2cpp",
-                    "Android": "android",
-                    "WebGL": "webgl",
-                    "iOS": "ios",
-                };
-            } else if (osType == 'Darwin') {
-                moduleMap = {
-                    "StandaloneOSX": "mac-il2cpp",
-                    "iOS": "ios",
-                    "Android": "android",
-                    "tvOS": "appletv",
-                    "StandaloneLinux64": "linux-il2cpp",
-                };
-            } else if (osType == 'Windows_NT') {
-                moduleMap = {
-                    "StandaloneWindows64": "windows-il2cpp",
-                    "WSAPlayer": "universal-windows-platform",
-                    "Android": "android",
-                    "iOS": "ios",
-                    "tvOS": "appletv",
-                    "StandaloneLinux64": "linux-il2cpp",
-                    "Lumin": "lumin",
-                    "WebGL": "webgl",
-                };
-            } else {
-                throw Error(`${osType} not supported`);
-            }
-
-            var targets = buildTargets.split(' ');
-            core.debug(`targets: ${targets}`);
-
-            for (const target of targets) {
-                core.debug(`target: ${target}`);
-
-                var module = moduleMap[target];
-
-                if (module === undefined) {
-                    core.warning(`${target} not a valid build-target`);
-                    continue;
-                }
-
-                modules += `${module} `;
-                core.debug(`  ${target} -> ${module}`);
-            }
-
-            modules = modules.trim();
+            throw Error(`${osType} not supported`);
         }
+
+        var targets = buildTargets.split(' ');
+        core.debug(`targets: ${targets}`);
+
+        for (const target of targets) {
+            core.debug(`target: ${target}`);
+
+            var module = moduleMap[target];
+
+            if (module === undefined) {
+                core.warning(`${target} not a valid build-target`);
+                continue;
+            }
+
+            modules += `${module} `;
+            core.debug(`  ${target} -> ${module}`);
+        }
+
+        modules = modules.trim();
 
         var versionFilePath = core.getInput('version-file-path');
 

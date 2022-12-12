@@ -9,11 +9,6 @@ inputs:
     description: 'Optional, specify the build targets to install for (i.e "StandaloneWindows64 WSAPlayer StandaloneOSX iOS StandaloneLinux64 Android Lumin WebGL")'
     required: false
     default: ''
-  modules:
-    deprecationMessage: 'Use build-targets instead'
-    description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
-    required: false
-    default: ''
 runs:
   using: 'node16'
   main: 'dist/index.js'
