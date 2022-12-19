@@ -58,7 +58,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     }
 }
 elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
-    $hubPath = "$HOME/Applications/Unity Hub.AppImage"
+    $hubPath = "~/Applications/Unity Hub.AppImage"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
 
