@@ -128,7 +128,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo sh -c 'export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk ''{print $2}''):0.0
 sudo service dbus restart
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
-if [ -d "@XDG_RUNTIME_DIR" ]
+if [ -d  $XDG_RUNTIME_DIR ]
 then
     sudo mkdir $XDG_RUNTIME_DIR
     sudo chmod 700 $XDG_RUNTIME_DIR
