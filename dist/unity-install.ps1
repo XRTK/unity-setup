@@ -125,6 +125,17 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
         touch "$HOME/.config/unityhub/eulaAccepted"
+        sudo sh -c 'export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk ''{print $2}''):0.0
+sudo service dbus restart
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+if [ -d "@XDG_RUNTIME_DIR" ]
+then
+    sudo mkdir $XDG_RUNTIME_DIR
+    sudo chmod 700 $XDG_RUNTIME_DIR
+    sudo chown $(id -un):$(id -gn) $XDG_RUNTIME_DIR
+fi
+export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS --nofork --nopidfile --syslog-only &'
     }
 
     Write-Host "::endgroup::"
