@@ -124,7 +124,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         #$baseUrl = "https://web.archive.org/web/20211105232457/https://public-cdn.cloud.unity3d.com/hub/prod"
         $wc.DownloadFile("$baseUrl/UnityHub.AppImage", "$hubPath")
         chmod -v a+x "$hubPath"
-        touch "$HOME/.config/Unity Hub/eulaAccepted"
+        touch "$HOME/.config/untiyhub/eulaAccepted"
     }
 
     Write-Host "::endgroup::"
