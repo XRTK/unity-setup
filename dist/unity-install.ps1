@@ -118,10 +118,10 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
         mkdir -pv "$HOME/Unity Hub" "$HOME/.config/Unity Hub" "$editorRootPath"
         sudo apt-get update
-        sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2 at-spi2-core
+        sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2
 
         #https://www.linuxdeveloper.space/install-unity-linux/
-        $wc.DownloadFile("$baseUrl/UnityHub.AppImage", "$hubPath")
+        $wc.DownloadFile("https://web.archive.org/web/20221006200407/https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage", "$hubPath")
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
     }
