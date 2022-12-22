@@ -121,7 +121,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo apt update
         sudo apt upgrade -y
         sudo apt autoremove -y
-        sudo apt install -y unityhub=3.4.0
+        sudo apt install -y unityhub
         which unityhub
     }
 
