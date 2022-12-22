@@ -121,7 +121,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2
 
         #https://www.linuxdeveloper.space/install-unity-linux/
-        $wc.DownloadFile("https://web.archive.org/web/20211105232457/https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage", "$hubPath")
+        $baseUrl = "https://web.archive.org/web/20211105232457/https://public-cdn.cloud.unity3d.com/hub/prod"
+        $wc.DownloadFile("$baseUrl/UnityHub.AppImage", "$hubPath")
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
     }
