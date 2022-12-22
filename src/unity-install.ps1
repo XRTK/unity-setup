@@ -118,7 +118,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
         mkdir -pv "$HOME/Unity Hub" "$HOME/.config/Unity Hub" "$editorRootPath"
         sudo apt-get update
-        sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2
+        sudo apt-get install -y libgconf-2-4 libglu1 libasound2 libgtk2.0-0 libgtk-3-0 libnss3 zenity xvfb libssl1.1 libfuse2 at-spi2-core
 
         #https://www.linuxdeveloper.space/install-unity-linux/
         #$baseUrl = "https://web.archive.org/web/20211105232457/https://public-cdn.cloud.unity3d.com/hub/prod"
