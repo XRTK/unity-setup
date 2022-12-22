@@ -124,7 +124,6 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $wc.DownloadFile("$baseUrl/UnityHub.AppImage", "$hubPath")
         chmod -v a+x "$hubPath"
         touch "$HOME/.config/Unity Hub/eulaAccepted"
-        sudo sh -c 'echo ""export NO_AT_BRIDGE=1""'
     }
 
     Write-Host "::endgroup::"
