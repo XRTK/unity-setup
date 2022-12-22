@@ -58,7 +58,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     }
 }
 elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
-    $hubPath = "~/Applications/Unity Hub.AppImage"
+    $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
 
@@ -116,7 +116,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
-        sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
+        sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
         sudo apt upgrade -y
