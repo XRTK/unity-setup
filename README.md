@@ -5,8 +5,9 @@ An atomic GitHub action to download and install the Unity Editor for runners.
 * If a valid installation is found, then installation is skipped.
 * If a module is missing for a valid build target, then the module is installed.
 * Outputs:
-  * `UNITY_EDITOR_PATH` The path to the Unity Editor Installation
-  * `UNITY_PROJECT PATH` The path to the Unity Project
+  * `UNITY_EDITOR_PATH` The path to the Unity Editor Installation.
+  * `UNITY_PROJECT PATH` The path to the Unity Project.
+  * `UNITY_EDITOR_VERSION` The version of the Unity Editor that was installed.
 
 Part of the [Mixed Reality Toolkit (XRTK)](https://github.com/XRTK) open source project.
 

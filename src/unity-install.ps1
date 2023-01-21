@@ -23,6 +23,12 @@ $vMatches = [regex]::Matches($version, $pattern)
 $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
 $unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
 
+if ([String]::IsNullOrEmpty($unityVersion)) {
+    Write-Host ""
+    "UNITY_EDITOR_VERSION=$unityVersion" >> $env:GITHUB_ENV
+    Write-Host "Unity Editor version set to: $unityVersion"
+}
+
 if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") ) {
     $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
     $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"

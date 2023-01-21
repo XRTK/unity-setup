@@ -1,6 +1,6 @@
 {
   "name": "unity-setup",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "description": "An atomic GitHub action to download and install the Unity Editor for runners.",
   "main": "src/index.js",
   "scripts": {
