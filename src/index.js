@@ -33,6 +33,7 @@ const main = async () => {
                     "Android": "android",
                     "tvOS": "appletv",
                     "StandaloneLinux64": "linux-il2cpp",
+                    "WebGL": "webgl",
                 };
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
