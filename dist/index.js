@@ -4261,13 +4261,11 @@ const getArchitecture = () => {
                         core.debug(`stdout: ${trimmedOutput}`);
 
                         if (trimmedOutput.toLowerCase().includes('x86_64')) {
-                            core.info('Running on Intel (x86_64) architecture.');
                             resolve('x86_64');
                         } else if (trimmedOutput.toLowerCase().includes('arm64')) {
-                            core.info('Running on Apple Silicon (arm64) architecture.');
                             resolve('arm64');
                         } else {
-                            reject(Error('Unknown architecture: Unable to determine architecture'));
+                            reject(Error(`Unknown architecture: Unable to determine architecture: ${trimmedOutput}`));
                         }
                     },
                 },
