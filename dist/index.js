@@ -4250,16 +4250,16 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
-const getArchitecture = async () => {
+const getArchitecture = () => {
     try {
-        const sysctlResult = await exec.exec('sysctl', ['-n', 'machdep.cpu.brand_string']);
-        const stdout = sysctlResult.stdout.trim();
-        core.info(`stdout: ${stdout}`);
+        const stdout = exec.execSync('sysctl -n machdep.cpu.brand_string', { silent: true }).stdout;
+        const trimmedOutput = stdout.trim();
+        core.debug(`stdout: ${trimmedOutput}`);
 
-        if (stdout.toLowerCase().includes('intel')) {
+        if (trimmedOutput.toLowerCase().includes('intel')) {
             core.info('Running on Intel (x86_64) architecture.');
             return 'x86_64';
-        } else if (stdout.toLowerCase().includes('apple')) {
+        } else if (trimmedOutput.toLowerCase().includes('apple')) {
             core.info('Running on Apple Silicon (arm64) architecture.');
             return 'arm64';
         } else {
