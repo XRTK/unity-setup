@@ -4260,7 +4260,8 @@ const getArchitecture = () => {
                         const trimmedOutput = data.toString().trim();
                         core.info(`stdout: ${trimmedOutput}`);
 
-                        if (trimmedOutput.toLowerCase().includes('x86_64')) {
+                        if (trimmedOutput.toLowerCase().includes('x86_64') ||
+                            trimmedOutput.toLowerCase().includes('i386')) {
                             resolve('x86_64');
                         } else if (trimmedOutput.toLowerCase().includes('arm64')) {
                             resolve('arm64');
