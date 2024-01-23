@@ -4258,7 +4258,7 @@ const getArchitecture = () => {
                 listeners: {
                     stdout: (data) => {
                         const trimmedOutput = data.toString().trim();
-                        core.debug(`stdout: ${trimmedOutput}`);
+                        core.info(`stdout: ${trimmedOutput}`);
 
                         if (trimmedOutput.toLowerCase().includes('x86_64')) {
                             resolve('x86_64');
@@ -4271,7 +4271,7 @@ const getArchitecture = () => {
                 },
             };
 
-            exec.exec('uname', ['-m'], options);
+            exec.exec('arch', [], options);
         } catch (error) {
             reject(Error(`Failed to determine architecture: ${error.message}`));
         }
