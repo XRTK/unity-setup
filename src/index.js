@@ -134,13 +134,14 @@ const findFile = async (dir, filePath) => {
 
 const getArchitecture = async () => {
     try {
-        const { stdout } = await exec.exec('sysctl -n machdep.cpu.brand_string');
-        core.info(`stdout: ${stdout}`);
+        const result = await exec.exec('sysctl -n machdep.cpu.brand_string');
+        const stdout = result.stdout;
+        core.debug(`stdout: ${stdout}`);
 
-        if (stdout.toLowerCase().includes('intel')) {
+        if (stdout && stdout.toLowerCase().includes('intel')) {
             core.info('Running on Intel (x86_64) architecture.');
             return 'x86_64';
-        } else if (stdout.toLowerCase().includes('apple')) {
+        } else if (stdout && stdout.toLowerCase().includes('apple')) {
             core.info('Running on Apple Silicon (arm64) architecture.');
             return 'arm64';
         } else {
