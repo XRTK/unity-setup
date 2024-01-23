@@ -38,6 +38,7 @@ const main = async () => {
                 };
 
                 architecture = await getArchitecture();
+                core.info(`architecture: ${architecture}`);
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
@@ -132,31 +133,33 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
-const getArchitecture = async () => {
-    try {
-        const options = {
-            listeners: {
-                stdout: (data) => {
-                    const trimmedOutput = data.toString().trim();
-                    core.info(`output: ${trimmedOutput}`);
+const getArchitecture = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            const options = {
+                listeners: {
+                    stdout: (data) => {
+                        const trimmedOutput = data.toString().trim();
+                        core.debug(`stdout: ${trimmedOutput}`);
 
-                    if (trimmedOutput.toLowerCase().includes('x86_64')) {
-                        core.info('Running on Intel (x86_64) architecture.');
-                        return 'x86_64';
-                    } else if (trimmedOutput.toLowerCase().includes('arm64')) {
-                        core.info('Running on Apple Silicon (arm64) architecture.');
-                        return 'arm64';
-                    } else {
-                        throw Error('Unknown architecture: Unable to determine architecture');
-                    }
+                        if (trimmedOutput.toLowerCase().includes('x86_64')) {
+                            core.info('Running on Intel (x86_64) architecture.');
+                            resolve('x86_64');
+                        } else if (trimmedOutput.toLowerCase().includes('arm64')) {
+                            core.info('Running on Apple Silicon (arm64) architecture.');
+                            resolve('arm64');
+                        } else {
+                            reject(Error('Unknown architecture: Unable to determine architecture'));
+                        }
+                    },
                 },
-            },
-        };
+            };
 
-        await exec.exec('uname', ['-m'], options);
-    } catch (error) {
-        throw Error(`Failed to determine architecture: ${error.message}`);
-    }
+            exec.exec('uname', ['-m'], options);
+        } catch (error) {
+            reject(Error(`Failed to determine architecture: ${error.message}`));
+        }
+    });
 };
 
 // Call the main function to run the action
