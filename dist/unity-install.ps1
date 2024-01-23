@@ -42,7 +42,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
     #"Unity Hub.exe" -- --headless help
     #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
-        $argList = (@('--','--headless','--errors') + $args.Split(" "))
+        $argList = (@('--','--headless') + $args.Split(" "))
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
@@ -59,7 +59,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
     # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
-        $argList = (@('--','--headless','--errors') + $args.Split(" "))
+        $argList = (@('--','--headless') + $args.Split(" "))
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
@@ -77,7 +77,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
     # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
     function Invoke-UnityHub {
         $argsList = $args.Split(" ")
-        xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless --errors $argsList
+        xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless $argsList
     }
 }
 
