@@ -4250,21 +4250,28 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
-const getArchitecture = () => {
+const getArchitecture = async () => {
     try {
-        const stdout = exec.execSync('sysctl -n machdep.cpu.brand_string', { silent: true }).stdout;
-        const trimmedOutput = stdout.trim();
-        core.debug(`stdout: ${trimmedOutput}`);
+        const options = {
+            listeners: {
+                stdout: (data) => {
+                    const trimmedOutput = data.toString().trim();
+                    core.info(`output: ${trimmedOutput}`);
 
-        if (trimmedOutput.toLowerCase().includes('intel')) {
-            core.info('Running on Intel (x86_64) architecture.');
-            return 'x86_64';
-        } else if (trimmedOutput.toLowerCase().includes('apple')) {
-            core.info('Running on Apple Silicon (arm64) architecture.');
-            return 'arm64';
-        } else {
-            throw Error('Unknown architecture: Unable to determine architecture');
-        }
+                    if (trimmedOutput.toLowerCase().includes('x86_64')) {
+                        core.info('Running on Intel (x86_64) architecture.');
+                        return 'x86_64';
+                    } else if (trimmedOutput.toLowerCase().includes('arm64')) {
+                        core.info('Running on Apple Silicon (arm64) architecture.');
+                        return 'arm64';
+                    } else {
+                        throw Error('Unknown architecture: Unable to determine architecture');
+                    }
+                },
+            },
+        };
+
+        await exec.exec('uname', ['-m'], options);
     } catch (error) {
         throw Error(`Failed to determine architecture: ${error.message}`);
     }
