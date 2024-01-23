@@ -4156,14 +4156,6 @@ const main = async () => {
                 };
 
                 architecture = await getArchitecture();
-
-                if (architecture === 'x86_64') {
-                    core.info('Running on Intel (x86_64) architecture.');
-                } else if (architecture === 'arm64') {
-                    core.info('Running on Apple Silicon (arm64) architecture.');
-                } else {
-                    core.setFailed(`Unknown architecture: ${architecture}`);
-                }
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
@@ -4259,16 +4251,16 @@ const findFile = async (dir, filePath) => {
 };
 
 const getArchitecture = async () => {
-    let architecture = '';
-
-    try {
-        const { stdout } = await exec.exec('uname -m');
-        architecture = stdout ? stdout.trim() : '';
-    } catch (error) {
-        core.warning(`Failed to determine architecture: ${error.message}`);
+    const { stdout } = await exec.exec('sysctl -n machdep.cpu.brand_string');
+    if (stdout && stdout.toLowerCase().includes('intel')) {
+        core.info('Running on Intel (x86_64) architecture.');
+        return 'x86_64';
+    } else if (stdout && stdout.toLowerCase().includes('apple')) {
+        core.info('Running on Apple Silicon (arm64) architecture.');
+        return 'arm64';
+    } else {
+        throw Error(`Unknown architecture: ${architecture}`);
     }
-
-    return architecture;
 };
 
 // Call the main function to run the action
