@@ -36,13 +36,13 @@ const main = async () => {
                     "StandaloneLinux64": "linux-il2cpp",
                     "WebGL": "webgl",
                 };
-                
+
                 architecture = await getArchitecture();
 
                 if (architecture === 'x86_64') {
-                    core.debug('Running on Intel (x86_64) architecture.');
+                    core.info('Running on Intel (x86_64) architecture.');
                 } else if (architecture === 'arm64') {
-                    core.debug('Running on Apple Silicon (arm64) architecture.');
+                    core.info('Running on Apple Silicon (arm64) architecture.');
                 } else {
                     core.setFailed(`Unknown architecture: ${architecture}`);
                 }
@@ -145,7 +145,7 @@ const getArchitecture = async () => {
 
     try {
         const { stdout } = await exec.exec('uname -m');
-        architecture = stdout.trim();
+        architecture = stdout ? stdout.trim() : '';
     } catch (error) {
         core.warning(`Failed to determine architecture: ${error.message}`);
     }
