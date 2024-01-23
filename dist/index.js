@@ -4127,6 +4127,7 @@ const os = __nccwpck_require__(37);
 const main = async () => {
     try {
         var modules = '';
+        var architecture = '';
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
 
@@ -4153,6 +4154,16 @@ const main = async () => {
                     "StandaloneLinux64": "linux-il2cpp",
                     "WebGL": "webgl",
                 };
+                
+                architecture = await getArchitecture();
+
+                if (architecture === 'x86_64') {
+                    core.debug('Running on Intel (x86_64) architecture.');
+                } else if (architecture === 'arm64') {
+                    core.debug('Running on Apple Silicon (arm64) architecture.');
+                } else {
+                    core.setFailed(`Unknown architecture: ${architecture}`);
+                }
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
@@ -4201,7 +4212,7 @@ const main = async () => {
         core.debug(`modules: ${modules}`);
         core.debug(`versionFilePath: ${versionFilePath}`);
 
-        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
+        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = __nccwpck_require__.ab + "unity-install.ps1";
         var exitCode = 0;
@@ -4247,6 +4258,18 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
+const getArchitecture = async () => {
+    let architecture = '';
+
+    try {
+        const { stdout } = await exec.exec('uname -m');
+        architecture = stdout.trim();
+    } catch (error) {
+        core.warning(`Failed to determine architecture: ${error.message}`);
+    }
+
+    return architecture;
+};
 
 // Call the main function to run the action
 main();
