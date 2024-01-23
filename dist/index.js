@@ -4251,15 +4251,21 @@ const findFile = async (dir, filePath) => {
 };
 
 const getArchitecture = async () => {
-    const { stdout } = await exec.exec('sysctl -n machdep.cpu.brand_string');
-    if (stdout && stdout.toLowerCase().includes('intel')) {
-        core.info('Running on Intel (x86_64) architecture.');
-        return 'x86_64';
-    } else if (stdout && stdout.toLowerCase().includes('apple')) {
-        core.info('Running on Apple Silicon (arm64) architecture.');
-        return 'arm64';
-    } else {
-        throw Error('Unknown architecture: Unable to determine architecture');
+    try {
+        const { stdout } = await exec.exec('sysctl -n machdep.cpu.brand_string');
+        core.info(`stdout: ${stdout}`);
+
+        if (stdout.toLowerCase().includes('intel')) {
+            core.info('Running on Intel (x86_64) architecture.');
+            return 'x86_64';
+        } else if (stdout.toLowerCase().includes('apple')) {
+            core.info('Running on Apple Silicon (arm64) architecture.');
+            return 'arm64';
+        } else {
+            throw Error('Unknown architecture: Unable to determine architecture');
+        }
+    } catch (error) {
+        throw Error(`Failed to determine architecture: ${error.message}`);
     }
 };
 
