@@ -141,7 +141,7 @@ const getArchitecture = async () => {
         core.info('Running on Apple Silicon (arm64) architecture.');
         return 'arm64';
     } else {
-        throw Error(`Unknown architecture: ${architecture}`);
+        throw Error('Unknown architecture: Unable to determine architecture');
     }
 };
 
