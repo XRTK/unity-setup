@@ -4156,7 +4156,7 @@ const main = async () => {
                 };
 
                 architecture = await getArchitecture();
-                core.info(`architecture: ${architecture}`);
+                core.debug(`architecture: ${architecture}`);
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
@@ -4258,7 +4258,7 @@ const getArchitecture = () => {
                 listeners: {
                     stdout: (data) => {
                         const trimmedOutput = data.toString().trim();
-                        core.info(`stdout: ${trimmedOutput}`);
+                        core.debug(`getArchitecture::stdout: ${trimmedOutput}`);
 
                         if (trimmedOutput.toLowerCase().includes('x86_64')) {
                             resolve('x86_64');
