@@ -28,7 +28,7 @@ jobs:
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
-          - os: macos-latest
+          - os: macos-latest-xl
             build-targets: 'StandaloneOSX Android iOS'
 
     steps:
