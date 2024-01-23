@@ -4254,7 +4254,7 @@ const getArchitecture = async () => {
     try {
         const result = await exec.exec('sysctl -n machdep.cpu.brand_string');
         const stdout = result.stdout;
-        core.debug(`stdout: ${stdout}`);
+        core.info(`stdout: ${stdout}`);
 
         if (stdout && stdout.toLowerCase().includes('intel')) {
             core.info('Running on Intel (x86_64) architecture.');
