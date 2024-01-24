@@ -1,6 +1,7 @@
 param(
     [String]$versionFilePath,
-    [String]$modulesList
+    [String]$modulesList,
+    [String]$architecture
 )
 # Unity Editor Installation
 $modules = $modulesList.Split(" ")
@@ -145,11 +146,20 @@ Write-Host "::group::Unity Hub Options"
 Invoke-UnityHub help
 Write-Host "::endgroup::"
 
+# only show errors if github actions debug is enabled
+#if ($env:GITHUB_ACTIONS -eq "true") {
+    Invoke-UnityHub --errors
+#}
+
 $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
 if ( -not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+
+    if (-not [string]::IsNullOrEmpty($architecture)) {
+        $installArgs += "-a $architecture"
+    }
 
     $addModules = @()
 

@@ -9,6 +9,7 @@ const os = require('os');
 const main = async () => {
     try {
         var modules = '';
+        var architecture = '';
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
 
@@ -35,6 +36,9 @@ const main = async () => {
                     "StandaloneLinux64": "linux-il2cpp",
                     "WebGL": "webgl",
                 };
+
+                architecture = await getArchitecture();
+                core.debug(`architecture: ${architecture}`);
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
@@ -83,7 +87,7 @@ const main = async () => {
         core.debug(`modules: ${modules}`);
         core.debug(`versionFilePath: ${versionFilePath}`);
 
-        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\"`;
+        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
         var exitCode = 0;
@@ -129,6 +133,32 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
+const getArchitecture = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            const options = {
+                listeners: {
+                    stdout: (data) => {
+                        const trimmedOutput = data.toString().trim();
+                        core.debug(`getArchitecture::stdout: ${trimmedOutput}`);
+
+                        if (trimmedOutput.toLowerCase().includes('x86_64')) {
+                            resolve('x86_64');
+                        } else if (trimmedOutput.toLowerCase().includes('arm64')) {
+                            resolve('arm64');
+                        } else {
+                            reject(Error(`Unknown architecture: Unable to determine architecture: ${trimmedOutput}`));
+                        }
+                    },
+                },
+            };
+
+            exec.exec('uname -m', [], options);
+        } catch (error) {
+            reject(Error(`Failed to determine architecture: ${error.message}`));
+        }
+    });
+};
 
 // Call the main function to run the action
 main();

@@ -37,10 +37,10 @@ jobs:
             build-targets: 'StandaloneOSX Android iOS'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v7.2
+        uses: xrtk/unity-setup@v7.3
         with:
           build-targets: ${{ matrix.build-targets }} #Optional, overrides the default platform specific module installs.
           #version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional
