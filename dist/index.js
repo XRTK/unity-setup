@@ -27853,7 +27853,10 @@ const main = async () => {
     try {
         var modules = '';
         var architecture = core.getInput('architecture');
-        core.debug(`architecture: ${architecture}`);
+
+        if (architecture) {
+            core.debug(`architecture: ${architecture}`);
+        }
 
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);

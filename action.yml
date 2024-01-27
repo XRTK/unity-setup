@@ -17,7 +17,7 @@ inputs:
   architecture:
     description: 'Optional, specify the architecture to install (x86_64 or arm64)'
     required: false
-    default: 'x86_64'
+    default: ''
 
 runs:
   using: 'node20'
