@@ -27975,33 +27975,6 @@ const findFile = async (dir, filePath) => {
     return matchedFiles;
 };
 
-const getArchitecture = () => {
-    return new Promise((resolve, reject) => {
-        try {
-            const options = {
-                listeners: {
-                    stdout: (data) => {
-                        const trimmedOutput = data.toString().trim();
-                        core.debug(`getArchitecture::stdout: ${trimmedOutput}`);
-
-                        if (trimmedOutput.toLowerCase().includes('x86_64')) {
-                            resolve('x86_64');
-                        } else if (trimmedOutput.toLowerCase().includes('arm64')) {
-                            resolve('arm64');
-                        } else {
-                            reject(Error(`Unknown architecture: Unable to determine architecture: ${trimmedOutput}`));
-                        }
-                    },
-                },
-            };
-
-            exec.exec('uname -m', [], options);
-        } catch (error) {
-            reject(Error(`Failed to determine architecture: ${error.message}`));
-        }
-    });
-};
-
 // Call the main function to run the action
 main();
 })();
