@@ -9,7 +9,9 @@ const os = require('os');
 const main = async () => {
     try {
         var modules = '';
-        var architecture = '';
+        var architecture = core.getInput('architecture');
+        core.debug(`architecture: ${architecture}`);
+
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
 
@@ -17,9 +19,9 @@ const main = async () => {
            modules = core.getInput('modules');
            core.debug(`modules: ${modules}`);
         } else {
+            const osType = os.type();
             var moduleMap = undefined;
 
-            const osType = os.type();
             if (osType == 'Linux') {
                 moduleMap = {
                     "StandaloneLinux64": "linux-il2cpp",
@@ -36,9 +38,6 @@ const main = async () => {
                     "StandaloneLinux64": "linux-il2cpp",
                     "WebGL": "webgl",
                 };
-
-                architecture = await getArchitecture();
-                core.debug(`architecture: ${architecture}`);
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
                     "StandaloneWindows64": "windows-il2cpp",
