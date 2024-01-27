@@ -14,6 +14,11 @@ inputs:
     description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
     required: false
     default: ''
+  architecture:
+    description: 'Optional, specify the architecture to install (x86_64 or arm64)'
+    required: false
+    default: ''
+
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
