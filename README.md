@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v7.3
+        uses: xrtk/unity-setup@v7.4
         with:
           build-targets: ${{ matrix.build-targets }} #Optional, overrides the default platform specific module installs.
           #version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional
