@@ -31,7 +31,7 @@ jobs:
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
             arch: ''
-          - os: macos-latest
+          - os: macos-14
             build-targets: 'StandaloneOSX Android iOS'
             arch: 'arm64'
 
