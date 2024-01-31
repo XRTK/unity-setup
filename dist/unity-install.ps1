@@ -92,9 +92,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-    Write-Host "::group::Installing Unity Hub on $($global:PSVersionTable.Platform)"
 
     if ($IsWindows) {
+        Write-Host "::group::Installing Unity Hub on windows..."
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
         $startProcessArgs = @{
             'FilePath'     = "$outPath/UnityHubSetup.exe";
@@ -111,6 +111,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     } elseif ($IsMacOS) {
+        Write-Host "::group::Installing Unity Hub on masOS..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
@@ -125,6 +126,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
     } elseif ($IsLinux) {
+        Write-Host "::group::Installing Unity Hub on ubuntu..."
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
