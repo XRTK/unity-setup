@@ -25,13 +25,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             build-targets: 'StandaloneLinux64 Android iOS'
             arch: ''
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
             arch: ''
-          - os: macos-14
+          - os: macos-latest
             build-targets: 'StandaloneOSX Android iOS'
             arch: 'arm64'
 
