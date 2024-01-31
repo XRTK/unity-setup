@@ -152,7 +152,7 @@ Write-Host "::endgroup::"
 #}
 
 # set the editor path
-if ([string]::IsNullOrEmpty($architecture)) {
+if ([string]::IsNullOrEmpty($architecture) -or $architecture -eq 'x86_64') {
     $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 } else {
     $editorPath = "{0}{1}-{2}{3}" -f $editorRootPath,$unityVersion,$architecture,$editorFileEx
@@ -162,7 +162,7 @@ if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
 
-    if (-not [string]::IsNullOrEmpty($architecture)) {
+    if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
         $installArgs += "-a $architecture"
     }
 
