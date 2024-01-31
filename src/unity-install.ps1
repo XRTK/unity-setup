@@ -30,11 +30,7 @@ if ( -not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host "Unity Editor version set to: $unityVersion"
 }
 
-$windows = $global:PSVersionTable.Platform -eq "Win32NT"
-$macOS = $global:PSVersionTable.OS.Contains("Darwin")
-$linux = $global:PSVersionTable.OS.Contains("Linux") -or $global:PSVersionTable.OS.Contains("Unix")
-
-if ($windows) {
+if ($IsWindows) {
     $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
     $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
     $editorFileEx = "\Editor\Unity.exe"
@@ -51,7 +47,7 @@ if ($windows) {
         $p.WaitForExit()
     }
 }
-elseif ($macOS) {
+elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
@@ -68,7 +64,7 @@ elseif ($macOS) {
         $p.WaitForExit()
     }
 }
-elseif ($linux) {
+elseif ($IsLinux) {
     $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
@@ -83,6 +79,9 @@ elseif ($linux) {
         $argsList = $args.Split(" ")
         xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless $argsList
     }
+} else {
+    Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
+    exit 1
 }
 
 # Install hub if not found
@@ -94,7 +93,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
 
     Write-Host "::group::Installing Unity Hub on $($global:PSVersionTable.Platform)"
 
-    if ($windows) {
+    if ($IsWindows) {
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
         $startProcessArgs = @{
             'FilePath'     = "$outPath/UnityHubSetup.exe";
@@ -111,7 +110,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     }
-    elseif ($macOS) {
+    elseif ($IsMacOS) {
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
@@ -126,7 +125,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
     }
-    elseif ($linux) {
+    elseif ($IsLinux) {
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
