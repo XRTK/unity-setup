@@ -28,8 +28,9 @@ jobs:
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
-          - os: macos-latest
+          - os: macos-14
             build-targets: 'StandaloneOSX Android iOS'
+            arch: 'arm64'
 
     steps:
       - name: checkout self
@@ -47,6 +48,7 @@ jobs:
         id: unity-setup
         with:
           build-targets: '${{ matrix.build-targets }}'
+          architecture: '${{ matrix.arch }}'
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"

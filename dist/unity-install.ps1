@@ -147,13 +147,18 @@ Invoke-UnityHub help
 Write-Host "::endgroup::"
 
 # only show errors if github actions debug is enabled
-#if ($env:GITHUB_ACTIONS -eq "true") {
-    Invoke-UnityHub --errors
+#if ($env:GITHUB_ACTIONS -eq 'true') {
+#    Invoke-UnityHub --errors
 #}
 
-$editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
+# set the editor path
+if ([string]::IsNullOrEmpty($architecture)) {
+    $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
+} else {
+    $editorPath = "{0}{1}-{2}{3}" -f $editorRootPath,$unityVersion,$architecture,$editorFileEx
+}
 
-if ( -not (Test-Path -Path $editorPath)) {
+if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
 
@@ -216,7 +221,7 @@ if ( -not (Test-Path -Path $editorPath)) {
 Write-Host "Installed Editors:"
 Invoke-UnityHub editors -i
 
-if ( -not (Test-Path -Path $editorPath) ) {
+if (-not (Test-Path -Path $editorPath)) {
     Write-Error "Failed to validate installed editor path at $editorPath"
     exit 1
 }
@@ -225,12 +230,10 @@ $modulesPath = '{0}{1}{2}modules.json' -f $editorRootPath,$UnityVersion,[IO.Path
 
 if ( -not (Test-Path -Path $modulesPath)) {
     $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
-    #Write-Host "Cleaning up invalid installation under $editorPath"
     Write-Error "Failed to resolve modules path at $modulesPath"
 
     if (Test-Path -Path $editorPath) {
         Get-ChildItem $editorPath
-        # Remove-Item $editorPath -Recurse -Force
     }
 
     exit 1
