@@ -24,10 +24,13 @@ $vMatches = [regex]::Matches($version, $pattern)
 $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
 $unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
 
-if ( -not ([String]::IsNullOrEmpty($unityVersion))) {
+if (-not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host ""
     "UNITY_EDITOR_VERSION=$unityVersion" >> $env:GITHUB_ENV
     Write-Host "Unity Editor version set to: $unityVersion"
+} else {
+    Write-Error "Failed to determine editor version to install!"
+    exit 1
 }
 
 if ($IsWindows) {
@@ -46,8 +49,7 @@ if ($IsWindows) {
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-}
-elseif ($IsMacOS) {
+} elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
@@ -63,8 +65,7 @@ elseif ($IsMacOS) {
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-}
-elseif ($IsLinux) {
+} elseif ($IsLinux) {
     $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
@@ -109,8 +110,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             Write-Error "$(Get-Date): Failed with exit code: $($process.ExitCode)"
             exit 1
         }
-    }
-    elseif ($IsMacOS) {
+    } elseif ($IsMacOS) {
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
@@ -124,8 +124,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
-    }
-    elseif ($IsLinux) {
+    } elseif ($IsLinux) {
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
@@ -145,8 +144,6 @@ if ( -not (Test-Path "$hubPath") ) {
 }
 
 Write-Host "Unity Hub found at `"$hubPath`""
-
-# Write-Host "Editor root path currently set to: `"$editorRootPath`""
 
 Write-Host "::group::Unity Hub Options"
 Invoke-UnityHub help
@@ -169,38 +166,20 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
 
         # iterate over the editors and check if the version name contains (Intel) for x86_64 or (Apple silicon) for arm64
         foreach ($archEditor in $archEditors) {
-            if ((($archEditor.Contains("(Intel)") -and $architecture -eq 'x86_64')) -or ($archEditor.Contains("(Apple silicon)") -and $architecture -eq 'arm64')) {
-                # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
-                $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
+            if ($IsMacOS) {
+                if ((($archEditor.Contains("(Intel)") -and $architecture -eq 'x86_64')) -or ($archEditor.Contains("(Apple silicon)") -and $architecture -eq 'arm64')) {
+                    # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
+                    $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
+                }
+            } else {
+                Write-Error "Architecture lookup not supported for $($global:PSVersionTable.Platform)"
+                exit 1
             }
         }
     }
 }
 
-if (-not (Test-Path -Path $editorPath)) {
-    Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
-    $addModules = @()
-
-    if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
-        $installArgs += "-a $architecture"
-    }
-
-    foreach ($module in $modules) {
-        if ($module -eq 'android') {
-            $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
-            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
-                $addmodules += $jdkModule
-            }
-            $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
-            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
-                $addmodules += $ndkModule
-            }
-        }
-    }
-
-    $modules += $addModules
-
+function InstallModules($modules, $installArgs) {
     foreach ($module in $modules) {
         $installArgs += '-m'
         $installArgs += $module
@@ -213,39 +192,45 @@ if (-not (Test-Path -Path $editorPath)) {
     Invoke-UnityHub $installArgsString
     Write-Host ""
     Write-Host "::endgroup::"
-} else {
-    Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
+}
+
+function AddModules($modules, $moduleOptions) {
     $addModules = @()
 
     foreach ($module in $modules) {
         if ($module -eq 'android') {
             $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
             if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
-                $addmodules += $jdkModule
+                $addModules += $jdkModule
             }
             $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
             if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
-                $addmodules += $ndkModule
+                $addModules += $ndkModule
             }
         }
     }
 
+    return $addModules
+}
+
+if (-not (Test-Path -Path $editorPath)) {
+    Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
+    $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+    $modules = AddModules $modules $moduleOptions
+
+    if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
+        $installArgs += "-a $architecture"
+    }
+
+    InstallModules $modules $installArgs
+} else {
+    Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
+    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
+    $addModules = AddModules $modules $moduleOptions
+
     if ($addModules.Count -gt 0) {
         $modules += $addModules
-
-        foreach ($module in $modules) {
-            $installArgs += '-m'
-            $installArgs += $module
-            Write-Host "  > with module: $module"
-        }
-
-        $installArgsString = $installArgs -join " "
-
-        Write-Host "::group::Run unity-hub $installArgsString"
-        Invoke-UnityHub $installArgsString
-        Write-Host ""
-        Write-Host "::endgroup::"
+        InstallModules $modules $installArgs
     }
 }
 
