@@ -179,8 +179,8 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
     }
 }
 
-function InstallModules($modules, $installArgs) {
-    foreach ($module in $modules) {
+function Invoke-Hub-Install($installModules, $installArgs) {
+    foreach ($module in $installModules) {
         $installArgs += '-m'
         $installArgs += $module
         Write-Host "  > with module: $module"
@@ -194,17 +194,17 @@ function InstallModules($modules, $installArgs) {
     Write-Host "::endgroup::"
 }
 
-function AddModules($modules, $moduleOptions) {
+function AddModules($installModules, $moduleOptions) {
     $addModules = @()
 
-    foreach ($module in $modules) {
+    foreach ($module in $installModules) {
         if ($module -eq 'android') {
             $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
-            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
+            if (-not ($installModules | Where-Object { $_ -eq $jdkModule })) {
                 $addModules += $jdkModule
             }
             $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
-            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
+            if (-not ($installModules | Where-Object { $_ -eq $ndkModule })) {
                 $addModules += $ndkModule
             }
         }
@@ -216,21 +216,20 @@ function AddModules($modules, $moduleOptions) {
 if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
-    $modules = AddModules $modules $moduleOptions
+    $installModules = AddModules $modules $moduleOptions
 
     if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
         $installArgs += "-a $architecture"
     }
 
-    InstallModules $modules $installArgs
+    Invoke-Hub-Install $installModules $installArgs
 } else {
     Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install-modules',"--version $unityVersion",'--cm')
-    $addModules = AddModules $modules $moduleOptions
+    $installModules = AddModules $modules $moduleOptions
 
-    if ($addModules.Count -gt 0) {
-        $modules += $addModules
-        InstallModules $modules $installArgs
+    if ($installModules.Count -gt 0) {
+        Invoke-Hub-Install $installModules $installArgs
     }
 }
 

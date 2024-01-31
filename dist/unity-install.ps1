@@ -179,7 +179,7 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
     }
 }
 
-function InstallModules($modules, $installArgs) {
+function Invoke-Hub-Install($modules, $installArgs) {
     foreach ($module in $modules) {
         $installArgs += '-m'
         $installArgs += $module
@@ -222,7 +222,7 @@ if (-not (Test-Path -Path $editorPath)) {
         $installArgs += "-a $architecture"
     }
 
-    InstallModules $modules $installArgs
+    Invoke-Hub-Install $modules $installArgs
 } else {
     Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install-modules',"--version $unityVersion",'--cm')
@@ -230,7 +230,7 @@ if (-not (Test-Path -Path $editorPath)) {
 
     if ($addModules.Count -gt 0) {
         $modules += $addModules
-        InstallModules $modules $installArgs
+        Invoke-Hub-Install $modules $installArgs
     }
 }
 
