@@ -194,17 +194,17 @@ function Invoke-Hub-Install($installModules, $installArgs) {
     Write-Host "::endgroup::"
 }
 
-function AddModules($installModules, $moduleOptions) {
+function AddModules {
     $addModules = @()
 
-    foreach ($module in $installModules) {
+    foreach ($module in $modules) {
         if ($module -eq 'android') {
-            $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
-            if (-not ($installModules | Where-Object { $_ -eq $jdkModule })) {
+            $jdkModule = $modules | Where-Object { $_ -like 'android-open-jdk*' }
+            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
                 $addModules += $jdkModule
             }
-            $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
-            if (-not ($installModules | Where-Object { $_ -eq $ndkModule })) {
+            $ndkModule = $modules | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
+            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
                 $addModules += $ndkModule
             }
         }
@@ -216,7 +216,7 @@ function AddModules($installModules, $moduleOptions) {
 if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
-    $installModules = AddModules $modules $moduleOptions
+    $installModules = AddModules
 
     if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
         $installArgs += "-a $architecture"
@@ -226,7 +226,7 @@ if (-not (Test-Path -Path $editorPath)) {
 } else {
     Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install-modules',"--version $unityVersion",'--cm')
-    $installModules = AddModules $modules $moduleOptions
+    $installModules = AddModules
 
     if ($installModules.Count -gt 0) {
         Invoke-Hub-Install $installModules $installArgs
