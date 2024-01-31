@@ -174,17 +174,22 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
 if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+    $addModules = @()
 
     if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
         $installArgs += "-a $architecture"
     }
 
-    $addModules = @()
-
     foreach ($module in $modules) {
         if ($module -eq 'android') {
-            $addmodules += 'android-open-jdk'
-            $addmodules += 'android-sdk-ndk-tools'
+            $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
+            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
+                $addmodules += $jdkModule
+            }
+            $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
+            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
+                $addmodules += $ndkModule
+            }
         }
     }
 
