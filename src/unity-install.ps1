@@ -123,10 +123,15 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         touch '/Library/Application Support/Unity/temp'
     }
     elseif ($global:PSVersionTable.OS.Contains("Linux")) {
+        Write-Host "get unity linux repo..."
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
+        Write-Host "get unity linux repo keys..."
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
+        Write-Host "update apt..."
         sudo apt update
+        Write-Host "install unityhub..."
         sudo apt install -y unityhub
+        Write-Host "set unityhub path..."
         $hubPath = which unityhub
     }
 
