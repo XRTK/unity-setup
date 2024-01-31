@@ -88,7 +88,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-    Write-Host "::group::Installing Unity Hub..."
+    Write-Host "::group::Installing Unity Hub on $($global:PSVersionTable.Platform)"
 
     if ((-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT")) {
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
@@ -133,6 +133,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo apt install -y unityhub
         Write-Host "set unityhub path..."
         $hubPath = which unityhub
+    } else {
+        Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
+        exit 1
     }
 
     Write-Host "::endgroup::"
