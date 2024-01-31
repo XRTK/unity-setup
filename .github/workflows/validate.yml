@@ -29,7 +29,7 @@ jobs:
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
-          - os: macos-14-arm64
+          - os: macos-14
             build-targets: 'StandaloneOSX Android iOS'
             arch: 'arm64'
           - os: macos-latest
