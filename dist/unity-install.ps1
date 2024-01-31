@@ -198,6 +198,7 @@ function AddModules {
     $addModules = @()
 
     foreach ($module in $modules) {
+        $addModules += $module
         if ($module -eq 'android') {
             $jdkModule = $modules | Where-Object { $_ -like 'android-open-jdk*' }
             if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
@@ -243,7 +244,7 @@ if (-not (Test-Path -Path $editorPath)) {
 
 $modulesPath = '{0}{1}{2}modules.json' -f $editorRootPath,$UnityVersion,[IO.Path]::DirectorySeparatorChar
 
-if ( -not (Test-Path -Path $modulesPath)) {
+if (-not (Test-Path -Path $modulesPath)) {
     $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
     Write-Error "Failed to resolve modules path at $modulesPath"
 
@@ -257,8 +258,8 @@ if ( -not (Test-Path -Path $modulesPath)) {
 Write-Host "Modules Manifest: "$modulesPath
 
 foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsHashTable)) {
-    if ( ($module.category -eq 'Platforms') -and ($module.visible -eq $true) ) {
-        if ( -not ($modules -contains $module.id) ) {
+    if (($module.category -eq 'Platforms') -and ($module.visible -eq $true)) {
+        if (-not ($modules -contains $module.id)) {
             Write-Host "  > additional module option: " $module.id
         }
     }
