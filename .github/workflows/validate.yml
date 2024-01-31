@@ -22,12 +22,16 @@ jobs:
   validate:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
+          - os: macos-14
+            build-targets: 'StandaloneOSX Android iOS'
+            arch: 'arm64'
           - os: macos-latest
             build-targets: 'StandaloneOSX Android iOS'
 
@@ -47,6 +51,7 @@ jobs:
         id: unity-setup
         with:
           build-targets: '${{ matrix.build-targets }}'
+          architecture: '${{ matrix.arch }}'
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"

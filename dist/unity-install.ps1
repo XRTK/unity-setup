@@ -24,13 +24,16 @@ $vMatches = [regex]::Matches($version, $pattern)
 $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
 $unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
 
-if ( -not ([String]::IsNullOrEmpty($unityVersion))) {
+if (-not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host ""
     "UNITY_EDITOR_VERSION=$unityVersion" >> $env:GITHUB_ENV
     Write-Host "Unity Editor version set to: $unityVersion"
+} else {
+    Write-Error "Failed to determine editor version to install!"
+    exit 1
 }
 
-if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") ) {
+if ($IsWindows) {
     $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
     $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
     $editorFileEx = "\Editor\Unity.exe"
@@ -46,8 +49,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-}
-elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
+} elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
@@ -63,8 +65,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-}
-elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
+} elseif ($IsLinux) {
     $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
@@ -79,6 +80,9 @@ elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
         $argsList = $args.Split(" ")
         xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless $argsList
     }
+} else {
+    Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
+    exit 1
 }
 
 # Install hub if not found
@@ -88,9 +92,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-    Write-Host "::group::Installing Unity Hub..."
 
-    if ((-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT")) {
+    if ($IsWindows) {
+        Write-Host "::group::Installing Unity Hub on windows..."
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
         $startProcessArgs = @{
             'FilePath'     = "$outPath/UnityHubSetup.exe";
@@ -106,8 +110,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             Write-Error "$(Get-Date): Failed with exit code: $($process.ExitCode)"
             exit 1
         }
-    }
-    elseif ($global:PSVersionTable.OS.Contains("Darwin")) {
+    } elseif ($IsMacOS) {
+        Write-Host "::group::Installing Unity Hub on masOS..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
@@ -121,13 +125,16 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
-    }
-    elseif ($global:PSVersionTable.OS.Contains("Linux")) {
+    } elseif ($IsLinux) {
+        Write-Host "::group::Installing Unity Hub on ubuntu..."
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
         sudo apt install -y unityhub
-        which unityhub
+        $hubPath = which unityhub
+    } else {
+        Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
+        exit 1
     }
 
     Write-Host "::endgroup::"
@@ -140,66 +147,42 @@ if ( -not (Test-Path "$hubPath") ) {
 
 Write-Host "Unity Hub found at `"$hubPath`""
 
-# Write-Host "Editor root path currently set to: `"$editorRootPath`""
-
 Write-Host "::group::Unity Hub Options"
 Invoke-UnityHub help
 Write-Host "::endgroup::"
 
 # only show errors if github actions debug is enabled
-#if ($env:GITHUB_ACTIONS -eq "true") {
-    Invoke-UnityHub --errors
+#if ($env:GITHUB_ACTIONS -eq 'true') {
+#    Invoke-UnityHub --errors
 #}
 
+# set the editor path
 $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
-if ( -not (Test-Path -Path $editorPath)) {
-    Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+# if architecture is set, check if the specific architecture is installed
+if (-not [string]::IsNullOrEmpty($architecture)) {
+    # if an editor path is found, check which architecture it is
+    if (Test-Path -Path $editorPath) {
+        # list all editor installations and pick the ones with the matching version from the returned console output
+        $archEditors = Invoke-UnityHub editors -i | Select-String -Pattern "$unityVersion" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value }
 
-    if (-not [string]::IsNullOrEmpty($architecture)) {
-        $installArgs += "-a $architecture"
-    }
-
-    $addModules = @()
-
-    foreach ($module in $modules) {
-        if ($module -eq 'android') {
-            $addmodules += 'android-open-jdk'
-            $addmodules += 'android-sdk-ndk-tools'
+        # iterate over the editors and check if the version name contains (Intel) for x86_64 or (Apple silicon) for arm64
+        foreach ($archEditor in $archEditors) {
+            if ($IsMacOS) {
+                if ((($archEditor.Contains("(Intel)") -and $architecture -eq 'x86_64')) -or ($archEditor.Contains("(Apple silicon)") -and $architecture -eq 'arm64')) {
+                    # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
+                    $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
+                }
+            } else {
+                Write-Error "Architecture lookup not supported for $($global:PSVersionTable.Platform)"
+                exit 1
+            }
         }
     }
+}
 
-    $modules += $addModules
-
-    foreach ($module in $modules) {
-        $installArgs += '-m'
-        $installArgs += $module
-        Write-Host "  > with module: $module"
-    }
-
-    $installArgsString = $installArgs -join " "
-
-    Write-Host "::group::Run unity-hub $installArgsString"
-    Invoke-UnityHub $installArgsString
-    Write-Host ""
-    Write-Host "::endgroup::"
-} else {
-    Write-Host "Intalling modules for $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
-
-    $addModules = @()
-
-    foreach ($module in $modules) {
-        if ($module -eq 'android') {
-            $addmodules += 'android-open-jdk'
-            $addmodules += 'android-sdk-ndk-tools'
-        }
-    }
-
-    $modules += $addModules
-
-    foreach ($module in $modules) {
+function Invoke-Hub-Install($installModules, $installArgs) {
+    foreach ($module in $installModules) {
         $installArgs += '-m'
         $installArgs += $module
         Write-Host "  > with module: $module"
@@ -213,24 +196,62 @@ if ( -not (Test-Path -Path $editorPath)) {
     Write-Host "::endgroup::"
 }
 
+function AddModules {
+    $addModules = @()
+
+    foreach ($module in $modules) {
+        $addModules += $module
+        if ($module -eq 'android') {
+            $jdkModule = $modules | Where-Object { $_ -like 'android-open-jdk*' }
+            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
+                $addModules += $jdkModule
+            }
+            $ndkModule = $modules | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
+            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
+                $addModules += $ndkModule
+            }
+        }
+    }
+
+    return $addModules
+}
+
+if (-not (Test-Path -Path $editorPath)) {
+    Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
+    $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+    $installModules = AddModules
+
+    if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
+        $installArgs += "-a $architecture"
+    }
+
+    Invoke-Hub-Install $installModules $installArgs
+} else {
+    Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
+    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
+    $installModules = AddModules
+
+    if ($installModules.Count -gt 0) {
+        Invoke-Hub-Install $installModules $installArgs
+    }
+}
+
 Write-Host "Installed Editors:"
 Invoke-UnityHub editors -i
 
-if ( -not (Test-Path -Path $editorPath) ) {
+if (-not (Test-Path -Path $editorPath)) {
     Write-Error "Failed to validate installed editor path at $editorPath"
     exit 1
 }
 
 $modulesPath = '{0}{1}{2}modules.json' -f $editorRootPath,$UnityVersion,[IO.Path]::DirectorySeparatorChar
 
-if ( -not (Test-Path -Path $modulesPath)) {
+if (-not (Test-Path -Path $modulesPath)) {
     $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
-    #Write-Host "Cleaning up invalid installation under $editorPath"
     Write-Error "Failed to resolve modules path at $modulesPath"
 
     if (Test-Path -Path $editorPath) {
         Get-ChildItem $editorPath
-        # Remove-Item $editorPath -Recurse -Force
     }
 
     exit 1
@@ -239,8 +260,8 @@ if ( -not (Test-Path -Path $modulesPath)) {
 Write-Host "Modules Manifest: "$modulesPath
 
 foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsHashTable)) {
-    if ( ($module.category -eq 'Platforms') -and ($module.visible -eq $true) ) {
-        if ( -not ($modules -contains $module.id) ) {
+    if (($module.category -eq 'Platforms') -and ($module.visible -eq $true)) {
+        if (-not ($modules -contains $module.id)) {
             Write-Host "  > additional module option: " $module.id
         }
     }
