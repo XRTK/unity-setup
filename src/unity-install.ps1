@@ -30,7 +30,11 @@ if ( -not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host "Unity Editor version set to: $unityVersion"
 }
 
-if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") ) {
+$windows = $global:PSVersionTable.Platform -eq "Win32NT"
+$macOS = $global:PSVersionTable.OS.Contains("Darwin")
+$linux = $global:PSVersionTable.OS.Contains("Linux") -or $global:PSVersionTable.OS.Contains("Unix")
+
+if ($windows) {
     $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
     $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
     $editorFileEx = "\Editor\Unity.exe"
@@ -47,7 +51,7 @@ if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform
         $p.WaitForExit()
     }
 }
-elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
+elseif ($macOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
@@ -64,7 +68,7 @@ elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
         $p.WaitForExit()
     }
 }
-elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
+elseif ($linux) {
     $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
@@ -90,7 +94,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
 
     Write-Host "::group::Installing Unity Hub on $($global:PSVersionTable.Platform)"
 
-    if ((-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT")) {
+    if ($windows) {
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
         $startProcessArgs = @{
             'FilePath'     = "$outPath/UnityHubSetup.exe";
@@ -107,7 +111,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     }
-    elseif ($global:PSVersionTable.OS.Contains("Darwin")) {
+    elseif ($macOS) {
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
@@ -122,16 +126,11 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
     }
-    elseif ($global:PSVersionTable.OS.Contains("Linux")) {
-        Write-Host "get unity linux repo..."
+    elseif ($linux) {
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
-        Write-Host "get unity linux repo keys..."
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
-        Write-Host "update apt..."
         sudo apt update
-        Write-Host "install unityhub..."
         sudo apt install -y unityhub
-        Write-Host "set unityhub path..."
         $hubPath = which unityhub
     } else {
         Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
