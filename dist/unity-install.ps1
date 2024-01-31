@@ -152,10 +152,23 @@ Write-Host "::endgroup::"
 #}
 
 # set the editor path
-if ([string]::IsNullOrEmpty($architecture) -or $architecture -eq 'x86_64') {
-    $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
-} else {
-    $editorPath = "{0}{1}-{2}{3}" -f $editorRootPath,$unityVersion,$architecture,$editorFileEx
+$editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
+
+# if architecture is set, check if the specific architecture is installed
+if (-not [string]::IsNullOrEmpty($architecture)) {
+    # if an editor path is found, check which architecture it is
+    if (Test-Path -Path $editorPath) {
+        # list all editor installations and pick the ones with the matching version from the returned console output
+        $archEditors = Invoke-UnityHub editors -i | Select-String -Pattern "$unityVersion" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value }
+
+        # iterate over the editors and check if the version name contains (Intel) for x86_64 or (Apple silicon) for arm64
+        foreach ($archEditor in $archEditors) {
+            if ((($archEditor.Contains("(Intel)") -and $architecture -eq 'x86_64')) -or ($archEditor.Contains("(Apple silicon)") -and $architecture -eq 'arm64')) {
+                # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
+                $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
+            }
+        }
+    }
 }
 
 if (-not (Test-Path -Path $editorPath)) {
@@ -190,32 +203,39 @@ if (-not (Test-Path -Path $editorPath)) {
     Write-Host ""
     Write-Host "::endgroup::"
 } else {
-    Write-Host "Intalling modules for $unityVersion ($unityVersionChangeSet)"
+    Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
     $installArgs = @('install-modules',"--version $unityVersion",'--cm')
-
     $addModules = @()
 
     foreach ($module in $modules) {
         if ($module -eq 'android') {
-            $addmodules += 'android-open-jdk'
-            $addmodules += 'android-sdk-ndk-tools'
+            $jdkModule = $moduleOptions | Where-Object { $_ -like 'android-open-jdk*' }
+            if (-not ($modules | Where-Object { $_ -eq $jdkModule })) {
+                $addmodules += $jdkModule
+            }
+            $ndkModule = $moduleOptions | Where-Object { $_ -like 'android-sdk-ndk-tools*' }
+            if (-not ($modules | Where-Object { $_ -eq $ndkModule })) {
+                $addmodules += $ndkModule
+            }
         }
     }
 
-    $modules += $addModules
+    if ($addModules.Count -gt 0) {
+        $modules += $addModules
 
-    foreach ($module in $modules) {
-        $installArgs += '-m'
-        $installArgs += $module
-        Write-Host "  > with module: $module"
+        foreach ($module in $modules) {
+            $installArgs += '-m'
+            $installArgs += $module
+            Write-Host "  > with module: $module"
+        }
+
+        $installArgsString = $installArgs -join " "
+
+        Write-Host "::group::Run unity-hub $installArgsString"
+        Invoke-UnityHub $installArgsString
+        Write-Host ""
+        Write-Host "::endgroup::"
     }
-
-    $installArgsString = $installArgs -join " "
-
-    Write-Host "::group::Run unity-hub $installArgsString"
-    Invoke-UnityHub $installArgsString
-    Write-Host ""
-    Write-Host "::endgroup::"
 }
 
 Write-Host "Installed Editors:"
