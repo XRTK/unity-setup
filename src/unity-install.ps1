@@ -14,6 +14,7 @@ if ([String]::IsNullOrEmpty($projectPath)) {
     }
 
     $projectPath = (Get-Item $versionFilePath).Directory.Parent.FullName
+    $projectPath = $projectPath -replace '\\','/'
     Write-Host "Unity project path: `"$projectPath`""
     "UNITY_PROJECT_PATH=$projectPath" >> $env:GITHUB_ENV
 }
@@ -268,6 +269,7 @@ $envEditorPath = $env:UNITY_EDITOR_PATH
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
+    $editorPath = $editorPath -replace '\\','/'
     "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
     Write-Host "UnityEditor path set to: $editorPath"
 }
