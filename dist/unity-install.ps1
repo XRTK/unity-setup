@@ -14,6 +14,7 @@ if ([String]::IsNullOrEmpty($projectPath)) {
     }
 
     $projectPath = (Get-Item $versionFilePath).Directory.Parent.FullName
+    $projectPath = $projectPath -replace '\\','/'
     Write-Host "Unity project path: `"$projectPath`""
     "UNITY_PROJECT_PATH=$projectPath" >> $env:GITHUB_ENV
 }
@@ -34,16 +35,15 @@ if (-not ([String]::IsNullOrEmpty($unityVersion))) {
 }
 
 if ($IsWindows) {
-    $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
-    $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
-    $editorFileEx = "\Editor\Unity.exe"
+    $hubPath = "C:/Program Files/Unity Hub/Unity Hub.exe"
+    $editorRootPath = "C:/Program Files/Unity/Hub/Editor/"
+    $editorFileEx = "/Editor/Unity.exe"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
         $modules = @('windows-il2cpp', 'universal-windows-platform', 'android', 'ios')
     }
 
-    #"Unity Hub.exe" -- --headless help
-    #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
+    #. 'C:/Program Files/Unity Hub/Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
@@ -58,7 +58,6 @@ if ($IsWindows) {
         $modules = @('mac-il2cpp', 'ios', 'android')
     }
 
-    # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
         $argList = (@('--','--headless') + $args.Split(" "))
@@ -74,7 +73,6 @@ if ($IsWindows) {
         $modules = @('linux-il2cpp', 'android', 'ios')
     }
 
-    # /UnityHub.AppImage --headless help
     # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
     function Invoke-UnityHub {
         $argsList = $args.Split(" ")
@@ -244,7 +242,7 @@ if (-not (Test-Path -Path $editorPath)) {
     exit 1
 }
 
-$modulesPath = '{0}{1}{2}modules.json' -f $editorRootPath,$UnityVersion,[IO.Path]::DirectorySeparatorChar
+$modulesPath = '{0}{1}/modules.json' -f $editorRootPath,$UnityVersion
 
 if (-not (Test-Path -Path $modulesPath)) {
     $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
@@ -271,6 +269,7 @@ $envEditorPath = $env:UNITY_EDITOR_PATH
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
+    $editorPath = $editorPath -replace '\\','/'
     "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
     Write-Host "UnityEditor path set to: $editorPath"
 }
