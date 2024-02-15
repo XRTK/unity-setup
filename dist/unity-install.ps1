@@ -114,7 +114,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
-        Write-Host "::debug::DMG Volume: $dmgVolume"
+        Write-Host "DMG Volume: $dmgVolume"
 
         if ([string]::IsNullOrEmpty($dmgVolume)) {
             Write-Error "Failed to mount DMG volume"
@@ -122,7 +122,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         }
 
         $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
-        Write-Host "::debug::DMG App Path: $dmgAppPath"
+        Write-Host "DMG App Path: $dmgAppPath"
 
         if (!(Test-Path "$dmgAppPath")) {
             Write-Error "Unity Hub app not found at expected path: $dmgAppPath"
