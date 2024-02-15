@@ -129,7 +129,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
-        sudo cp -rf "`"$dmgAppPath`"" "/Applications"
+        sudo cp -rf "'$dmgAppPath'" "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
