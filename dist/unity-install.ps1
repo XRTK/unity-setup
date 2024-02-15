@@ -115,7 +115,13 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
         $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
-        sudo cp -rf "`"$dmgAppPath`"" "/Applications"
+
+        if (!(Test-Path "$dmgAppPath")) {
+            Write-Error "Unity Hub app not found at expected path: $dmgAppPath"
+            exit 1
+        }
+
+        sudo cp -rvf "`"$dmgAppPath`"" "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
