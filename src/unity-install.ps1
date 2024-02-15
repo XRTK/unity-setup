@@ -109,16 +109,21 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     } elseif ($IsMacOS) {
-        Write-Host "::group::Installing Unity Hub on masOS..."
+        Write-Host "::group::Installing Unity Hub..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
 
+        Write-Host "::group::Mounting Unity Hub DMG..."
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
-        Write-Host $dmgVolume
+        Write-Host "Mounted DMG volume: $dmgVolume"
+
+        Write-Host "::group::Finding Unity Hub app in DMG volume..."
         $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
-        Write-Host $dmgAppPath
-        sudo cp -rf "`"$dmgAppPath`"" "/Applications"
+        Write-Host "Found Unity Hub app at: $dmgAppPath"
+
+        Write-Host "::group::Copying Unity Hub app to Applications directory..."
+        sudo cp -rvf "`"$dmgAppPath`"" "/Applications"
 
         $counter = 0
         while (!(Test-Path "/Applications/Unity Hub.app")) {
