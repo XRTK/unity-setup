@@ -132,12 +132,12 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         Write-Host "DMG App Path: $dmgAppPath"
         Start-Sleep -Seconds 1
 
-        if (!(Test-Path "$dmgAppPath")) {
+        if (!(Test-Path $dmgAppPath)) {
             Write-Error "Unity Hub app not found at expected path: $dmgAppPath"
             exit 1
         }
 
-        sudo cp -rf "'$dmgAppPath'" "/Applications"
+        sudo cp -rf $dmgAppPath "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
