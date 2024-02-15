@@ -113,29 +113,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
-
-        Write-Host "Mounting Unity Hub DMG..."
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
-        Write-Host "Mounted DMG volume: $dmgVolume"
-
-        Write-Host "Finding Unity Hub app in DMG volume..."
         $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
-        Write-Host "Found Unity Hub app at: $dmgAppPath"
-
-        Write-Host "Copying Unity Hub app to Applications directory..."
-        sudo cp -rvf "`"$dmgAppPath`"" "/Applications"
-
-        $counter = 0
-        while (!(Test-Path $hubPath)) {
-            $counter++
-            if ($counter -gt 5) {
-                Write-Error "Failed to copy Unity Hub app after 5 attempts."
-                exit 1
-            }
-            Write-Host "Waiting for Unity Hub app to be copied..."
-            Start-Sleep -Seconds 1
-        }
-
+        sudo cp -rf "`"$dmgAppPath`"" "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
