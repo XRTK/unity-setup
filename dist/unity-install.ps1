@@ -113,6 +113,12 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
+
+        if (!(Test-Path $downloadPath)) {
+            Write-Error "Failed to download $package"
+            exit 1
+        }
+
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
         Write-Host "DMG Volume: $dmgVolume"
 
