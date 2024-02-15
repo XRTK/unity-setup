@@ -109,16 +109,35 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     } elseif ($IsMacOS) {
-        Write-Host "::group::Installing Unity Hub on masOS..."
+        Write-Host "::group::Installing Unity Hub on macOS..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
 
+        if (!(Test-Path $downloadPath)) {
+            Write-Error "Failed to download $package"
+            exit 1
+        }
+
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
-        Write-Host $dmgVolume
-        $dmgAppPath = (find "$DMGVolume" -name "*.app" -depth 1)
-        Write-Host $dmgAppPath
-        sudo cp -rf "`"$dmgAppPath`"" "/Applications"
+        Write-Host "DMG Volume: $dmgVolume"
+        Start-Sleep -Seconds 1
+
+        if ([string]::IsNullOrEmpty($dmgVolume)) {
+            Write-Error "Failed to mount DMG volume"
+            exit 1
+        }
+
+        $dmgAppPath = (sudo find "$dmgVolume" -name "*.app" -print | head -n 1)
+        Write-Host "DMG App Path: $dmgAppPath"
+        Start-Sleep -Seconds 1
+
+        if (!(Test-Path $dmgAppPath)) {
+            Write-Error "Unity Hub app not found at expected path: $dmgAppPath"
+            exit 1
+        }
+
+        sudo cp -rf $dmgAppPath "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
