@@ -127,7 +127,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
-        $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
+        $dmgAppPath = (find "$dmgVolume" -name "*.app" -print | head -n 1)
         Write-Host "DMG App Path: $dmgAppPath"
 
         if (!(Test-Path "$dmgAppPath")) {
