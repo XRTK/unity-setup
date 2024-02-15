@@ -116,9 +116,21 @@ if ( -not (Test-Path -Path "$hubPath") ) {
 
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
         Write-Host $dmgVolume
-        $dmgAppPath = (find "$DMGVolume" -name "*.app" -depth 1)
+        $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
         Write-Host $dmgAppPath
         sudo cp -rf "`"$dmgAppPath`"" "/Applications"
+
+        $counter = 0
+        while (!(Test-Path "/Applications/Unity Hub.app")) {
+            $counter++
+            if ($counter -gt 5) {
+                Write-Error "Failed to copy Unity Hub app after 5 attempts."
+                exit 1
+            }
+            Write-Host "::debug::Waiting for Unity Hub app to be copied..."
+            Start-Sleep -Seconds 1
+        }
+
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
