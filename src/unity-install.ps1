@@ -109,7 +109,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
     } elseif ($IsMacOS) {
-        Write-Host "Installing Unity Hub..."
+        Write-Host "::group::Installing Unity Hub..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
