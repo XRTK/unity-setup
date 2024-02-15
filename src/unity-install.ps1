@@ -135,6 +135,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
+        Start-Sleep -Seconds 1
+
         sudo cp -rf "'$dmgAppPath'" "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
