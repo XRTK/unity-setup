@@ -115,6 +115,12 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         $wc.DownloadFile("$baseUrl/$package", $downloadPath)
         $dmgVolume = (sudo hdiutil attach $downloadPath -nobrowse) | Select-String -Pattern '\/Volumes\/.*' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value } | select-object -first 1
         Write-Host "::debug::DMG Volume: $dmgVolume"
+
+        if ([string]::IsNullOrEmpty($dmgVolume)) {
+            Write-Error "Failed to mount DMG volume"
+            exit 1
+        }
+
         $dmgAppPath = (find "$dmgVolume" -name "*.app" -depth 1)
         Write-Host "::debug::DMG App Path: $dmgAppPath"
 
