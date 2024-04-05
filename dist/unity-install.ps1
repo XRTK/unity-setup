@@ -2,7 +2,7 @@ param(
     [String]$unityVersion,
     [String]$versionFilePath,
     [String]$modulesList,
-    [String]$architecture,
+    [String]$architecture
 )
 # Unity Editor Installation
 $modules = $modulesList.Split(" ")
