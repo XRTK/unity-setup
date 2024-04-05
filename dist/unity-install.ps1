@@ -23,14 +23,15 @@ if ([String]::IsNullOrEmpty($unityVersion)) {
     }
 
     $version = Get-Content $versionFilePath
+    $pattern = '(?<version>(?:(?<major>\d+)\.)?(?:(?<minor>\d+)\.)?(?:(?<patch>\d+[fab]\d+)\b))|((?:\((?<revision>\w+))\))'
+    $vMatches = [regex]::Matches($version, $pattern)
+    $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
+    $unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
 } else {
     $version = $unityVersion
+    $unityVersionChangeSet = $version -replace '.*\((.*)\)', '$1'
+    $unityVersion = $version -replace '\s*\(.*\)', ''
 }
-
-$pattern = '(?<version>(?:(?<major>\d+)\.)?(?:(?<minor>\d+)\.)?(?:(?<patch>\d+[fab]\d+)\b))|((?:\((?<revision>\w+))\))'
-$vMatches = [regex]::Matches($version, $pattern)
-$unityVersion = $vMatches[1].Groups['version'].Value.Trim()
-$unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
 
 if (-not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host ""
