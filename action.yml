@@ -14,7 +14,6 @@ inputs:
     required: false
     default: ''
   modules:
-    deprecationMessage: 'Use build-targets instead'
     description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
     required: false
     default: ''

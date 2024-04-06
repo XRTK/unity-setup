@@ -20,7 +20,7 @@ const main = async () => {
 
         if (!buildTargets) {
            modules = core.getInput('modules');
-           core.debug(`modules: ${modules}`);
+           var modules = modules.replace(/,/g, '').split(/\s+/).trim();
         } else {
             const osType = os.type();
             var moduleMap = undefined;
@@ -56,7 +56,7 @@ const main = async () => {
                 throw Error(`${osType} not supported`);
             }
 
-            var targets = buildTargets.split(' ');
+            var targets = buildTargets.replace(/,/g, '').split(/\s+/).trim();
             core.debug(`targets: ${targets}`);
 
             for (const target of targets) {
@@ -74,6 +74,7 @@ const main = async () => {
             }
 
             modules = modules.trim();
+            core.debug(`modules: ${modules}`);
         }
 
         var unityVersion = core.getInput('unity-version');
