@@ -20,7 +20,7 @@ const main = async () => {
 
         if (!buildTargets) {
            modules = core.getInput('modules');
-           var modules = modules.replace(/,/g, '').split(/\s+/).trim();
+           var modules = modules.replace(/,/g, '').split(/\s+/);
         } else {
             const osType = os.type();
             var moduleMap = undefined;
@@ -56,7 +56,7 @@ const main = async () => {
                 throw Error(`${osType} not supported`);
             }
 
-            var targets = buildTargets.replace(/,/g, '').split(/\s+/).trim();
+            var targets = buildTargets.replace(/,/g, '').split(/\s+/);
             core.debug(`targets: ${targets}`);
 
             for (const target of targets) {
