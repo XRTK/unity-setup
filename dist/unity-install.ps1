@@ -98,7 +98,6 @@ if ( -not (Test-Path -Path "$hubPath") ) {
     $outPath = $PSScriptRoot
     $wc = New-Object System.Net.WebClient
 
-
     if ($IsWindows) {
         Write-Host "::group::Installing Unity Hub on windows..."
         $wc.DownloadFile("$baseUrl/UnityHubSetup.exe", "$outPath/UnityHubSetup.exe")
