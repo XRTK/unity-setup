@@ -5,12 +5,15 @@ inputs:
     description: 'Optional, specify a path to search for the unity project version text file. Use this if step fails to find a valid project version file.'
     required: false
     default: ''
+  unity-version:
+    description: 'Optional, specify the Unity version to install. You must include the changeset! i.e 2019.4.13f1 (518737b1de84)'
+    required: false
+    default: ''
   build-targets:
     description: 'Optional, specify the build targets to install for (i.e "StandaloneWindows64 WSAPlayer StandaloneOSX iOS StandaloneLinux64 Android Lumin WebGL")'
     required: false
     default: ''
   modules:
-    deprecationMessage: 'Use build-targets instead'
     description: 'Optional, Additional modules to install with the editor (i.e "webgl android lumin")'
     required: false
     default: ''

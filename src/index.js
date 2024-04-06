@@ -20,7 +20,7 @@ const main = async () => {
 
         if (!buildTargets) {
            modules = core.getInput('modules');
-           core.debug(`modules: ${modules}`);
+           var modules = modules.replace(/,/g, '').split(/\s+/);
         } else {
             const osType = os.type();
             var moduleMap = undefined;
@@ -56,7 +56,7 @@ const main = async () => {
                 throw Error(`${osType} not supported`);
             }
 
-            var targets = buildTargets.split(' ');
+            var targets = buildTargets.replace(/,/g, '').split(/\s+/);
             core.debug(`targets: ${targets}`);
 
             for (const target of targets) {
@@ -74,22 +74,29 @@ const main = async () => {
             }
 
             modules = modules.trim();
+            core.debug(`modules: ${modules}`);
         }
 
+        var unityVersion = core.getInput('unity-version');
         var versionFilePath = core.getInput('version-file-path');
+        if (!unityVersion) {
+            if (!versionFilePath) {
+                // search for license file version
+                var exeDir = path.resolve(process.cwd());
+                core.debug(`exeDir: ${exeDir}`);
+                versionFilePath = await findFile(exeDir, 'ProjectVersion.txt');
+                core.debug(`version file path: ${versionFilePath}`);
+            }
 
-        if (!versionFilePath) {
-            // search for license file version
-            var exeDir = path.resolve(process.cwd());
-            core.debug(`exeDir: ${exeDir}`);
-            versionFilePath = await findFile(exeDir, 'ProjectVersion.txt');
-            core.debug(`version file path: ${versionFilePath}`);
+            core.debug(`modules: ${modules}`);
+            core.debug(`versionFilePath: ${versionFilePath}`);
+
+            var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
+        } else {
+            core.debug(`unityVersion: ${unityVersion}`);
+            var args = `-modulesList \"${modules}\" -unityVersion \"${unityVersion}\" -architecture \"${architecture}\"`;
         }
 
-        core.debug(`modules: ${modules}`);
-        core.debug(`versionFilePath: ${versionFilePath}`);
-
-        var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
         var exitCode = 0;
