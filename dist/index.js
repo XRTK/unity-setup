@@ -28074,11 +28074,13 @@ const main = async () => {
 
         if (architecture) {
             core.debug(`architecture: ${architecture}`);
+        } else {
+            if (os.type() == 'Darwin') {
+                architecture = os.arch();
+            }
         }
 
         // check if we are running on Apple Silicon arm64
-        var arch = os.arch();
-        console.log(`arch: ${arch}`);
 
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
