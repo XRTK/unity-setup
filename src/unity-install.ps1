@@ -245,7 +245,7 @@ if (-not (Test-Path -Path $editorPath)) {
     $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
     $installModules = AddModules
 
-    if (-not [string]::IsNullOrEmpty($architecture) -and $architecture -ne 'x86_64') {
+    if (-not [string]::IsNullOrEmpty($architecture)) {
         $installArgs += "-a $architecture"
     }
 
