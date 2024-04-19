@@ -16,8 +16,8 @@ const main = async () => {
         }
 
         // check if we are running on Apple Silicon arm64
-        var cpu = os.cpus()[0].model;
-        console.log(`cpu: ${cpu}`);
+        var arch = os.arch();
+        console.log(`arch: ${arch}`);
 
         var buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
