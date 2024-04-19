@@ -28074,6 +28074,12 @@ const main = async () => {
 
         if (architecture) {
             core.debug(`architecture: ${architecture}`);
+        } else {
+            if (os.type() == 'Darwin') {
+                // check if we are running on Apple Silicon arm64
+                var cpu = os.cpus()[0].model;
+                console.log(`cpu: ${cpu}`);
+            }
         }
 
         var buildTargets = core.getInput('build-targets');
