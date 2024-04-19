@@ -14,8 +14,8 @@ const main = async () => {
         if (architecture) {
             core.debug(`architecture: ${architecture}`);
         } else {
-            if (os.type() == 'Darwin') {
-                architecture = os.arch();
+            if (os.type() == 'Darwin' && os.arch() == 'arm64') {
+                architecture = 'arm64';
             }
         }
 
