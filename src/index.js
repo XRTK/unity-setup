@@ -13,6 +13,14 @@ const main = async () => {
 
         if (architecture) {
             core.debug(`architecture: ${architecture}`);
+        } else {
+            if (os.type() == 'Darwin') {
+                if (os.arch() == 'arm64') {
+                    architecture = 'arm64';
+                } else if (os.arch() == 'x64') {
+                    architecture = 'x86_64';
+                }
+            }
         }
 
         var buildTargets = core.getInput('build-targets');
