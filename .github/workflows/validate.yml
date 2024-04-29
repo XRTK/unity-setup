@@ -45,6 +45,7 @@ jobs:
         with:
           repository: xrtk/com.xrtk.test
           path: test-project
+          ref: development
 
       - uses: ./ # xrtk/unity-setup
         id: unity-setup
