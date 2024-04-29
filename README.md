@@ -40,11 +40,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: unity-setup
-        uses: xrtk/unity-setup@v7.4
+        uses: xrtk/unity-setup@v7
         with:
           build-targets: ${{ matrix.build-targets }} # Optional, specify the build targets to install
           version-file-path: 'ProjectSettings/ProjectVersion.txt' # Optional, specify a path to the unity project version text file
-          architecture: 'arm64' # Optional, specify the architecture to install (x86_64 or arm64)
+          # architecture: 'arm64' # Optional, specify the architecture to install (x86_64 or arm64)
 
       - run: |
           echo "${{ env.UNITY_EDITOR_PATH }}"
