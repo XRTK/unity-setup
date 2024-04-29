@@ -48,6 +48,7 @@ const main = async () => {
                     "tvOS": "appletv",
                     "StandaloneLinux64": "linux-il2cpp",
                     "WebGL": "webgl",
+                    "VisionOS": "visionos"
                 };
             } else if (osType == 'Windows_NT') {
                 moduleMap = {
