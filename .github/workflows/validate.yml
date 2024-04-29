@@ -30,7 +30,7 @@ jobs:
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android iOS'
           - os: macos-14
-            build-targets: 'StandaloneOSX Android iOS'
+            build-targets: 'StandaloneOSX Android iOS VisionOS'
           - os: macos-latest
             build-targets: 'StandaloneOSX Android iOS'
 
