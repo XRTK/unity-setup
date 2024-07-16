@@ -17,7 +17,7 @@ if ([String]::IsNullOrEmpty($unityVersion)) {
         }
 
         $projectPath = (Get-Item $versionFilePath).Directory.Parent.FullName
-        $projectPath = $projectPath -replace '\\','/'
+        $projectPath = $projectPath -replace '\\', '/'
         Write-Host "Unity project path: `"$projectPath`""
         "UNITY_PROJECT_PATH=$projectPath" >> $env:GITHUB_ENV
     }
@@ -27,7 +27,8 @@ if ([String]::IsNullOrEmpty($unityVersion)) {
     $vMatches = [regex]::Matches($version, $pattern)
     $unityVersion = $vMatches[1].Groups['version'].Value.Trim()
     $unityVersionChangeSet = $vMatches[2].Groups['revision'].Value.Trim()
-} else {
+}
+else {
     $version = $unityVersion
     $unityVersionChangeSet = $version -replace '.*\((.*)\)', '$1'
     $unityVersion = $version -replace '\s*\(.*\)', ''
@@ -37,7 +38,8 @@ if (-not ([String]::IsNullOrEmpty($unityVersion))) {
     Write-Host ""
     "UNITY_EDITOR_VERSION=$unityVersion" >> $env:GITHUB_ENV
     Write-Host "Unity Editor version set to: $unityVersion"
-} else {
+}
+else {
     Write-Error "Failed to determine editor version to install!"
     exit 1
 }
@@ -53,11 +55,12 @@ if ($IsWindows) {
 
     #. 'C:/Program Files/Unity Hub/Unity Hub.exe' -- --headless help
     function Invoke-UnityHub {
-        $argList = (@('--','--headless') + $args.Split(" "))
+        $argList = (@('--', '--headless') + $args.Split(" "))
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-} elseif ($IsMacOS) {
+}
+elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
     $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
@@ -68,11 +71,12 @@ if ($IsWindows) {
 
     #. "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" -- --headless help
     function Invoke-UnityHub {
-        $argList = (@('--','--headless') + $args.Split(" "))
+        $argList = (@('--', '--headless') + $args.Split(" "))
         $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList $argList
         $p.WaitForExit()
     }
-} elseif ($IsLinux) {
+}
+elseif ($IsLinux) {
     $hubPath = "/usr/bin/unityhub"
     $editorRootPath = "$HOME/Unity/Hub/Editor/"
     $editorFileEx = "/Editor/Unity"
@@ -86,7 +90,8 @@ if ($IsWindows) {
         $argsList = $args.Split(" ")
         xvfb-run --auto-servernum "$hubPath" --disable-gpu-sandbox --headless $argsList
     }
-} else {
+}
+else {
     Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
     exit 1
 }
@@ -115,7 +120,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             Write-Error "$(Get-Date): Failed with exit code: $($process.ExitCode)"
             exit 1
         }
-    } elseif ($IsMacOS) {
+    }
+    elseif ($IsMacOS) {
         Write-Host "::group::Installing Unity Hub on macOS..."
         $package = "UnityHubSetup.dmg"
         $downloadPath = "$outPath/$package"
@@ -149,14 +155,16 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod 775 "/Library/Application Support/Unity"
         touch '/Library/Application Support/Unity/temp'
-    } elseif ($IsLinux) {
+    }
+    elseif ($IsLinux) {
         Write-Host "::group::Installing Unity Hub on ubuntu..."
         sudo sh -c 'echo ""deb https://hub.unity3d.com/linux/repos/deb stable main"" > /etc/apt/sources.list.d/unityhub.list'
         wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
         sudo apt update
         sudo apt install -y unityhub
         $hubPath = which unityhub
-    } else {
+    }
+    else {
         Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
         exit 1
     }
@@ -181,7 +189,7 @@ Write-Host "::endgroup::"
 #}
 
 # set the editor path
-$editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
+$editorPath = "{0}{1}{2}" -f $editorRootPath, $unityVersion, $editorFileEx
 
 # if architecture is set, check if the specific architecture is installed
 if (-not [string]::IsNullOrEmpty($architecture)) {
@@ -197,7 +205,8 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
                     # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
                     $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
                 }
-            } else {
+            }
+            else {
                 Write-Error "Architecture lookup not supported for $($global:PSVersionTable.Platform)"
                 exit 1
             }
@@ -242,7 +251,7 @@ function AddModules {
 
 if (-not (Test-Path -Path $editorPath)) {
     Write-Host "Installing $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install',"--version $unityVersion","--changeset $unityVersionChangeSet",'--cm')
+    $installArgs = @('install', "--version $unityVersion", "--changeset $unityVersionChangeSet", '--cm')
     $installModules = AddModules
 
     if (-not [string]::IsNullOrEmpty($architecture)) {
@@ -250,9 +259,10 @@ if (-not (Test-Path -Path $editorPath)) {
     }
 
     Invoke-Hub-Install $installModules $installArgs
-} else {
+}
+else {
     Write-Host "Checking modules for $unityVersion ($unityVersionChangeSet)"
-    $installArgs = @('install-modules',"--version $unityVersion",'--cm')
+    $installArgs = @('install-modules', "--version $unityVersion", '--cm')
     $installModules = AddModules
 
     if ($installModules.Count -gt 0) {
@@ -268,10 +278,10 @@ if (-not (Test-Path -Path $editorPath)) {
     exit 1
 }
 
-$modulesPath = '{0}{1}/modules.json' -f $editorRootPath,$UnityVersion
+$modulesPath = '{0}{1}/modules.json' -f $editorRootPath, $UnityVersion
 
 if (-not (Test-Path -Path $modulesPath)) {
-    $editorPath = "{0}{1}" -f $editorRootPath,$unityVersion
+    $editorPath = "{0}{1}" -f $editorRootPath, $unityVersion
     Write-Error "Failed to resolve modules path at $modulesPath"
 
     if (Test-Path -Path $editorPath) {
@@ -291,11 +301,17 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
     }
 }
 
+# change installation file permissions for unix systems
+if ($IsLinux -or $IsMacOS) {
+    Write-Host "Changing file permissions for $editorPath"
+    sudo chmod -R 775 $editorPath
+}
+
 $envEditorPath = $env:UNITY_EDITOR_PATH
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
-    $editorPath = $editorPath -replace '\\','/'
+    $editorPath = $editorPath -replace '\\', '/'
     "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
     Write-Host "UnityEditor path set to: $editorPath"
 }
