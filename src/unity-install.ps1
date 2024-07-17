@@ -152,8 +152,15 @@ if ( -not (Test-Path -Path "$hubPath") ) {
 
         sudo cp -rf $dmgAppPath "/Applications"
         hdiutil unmount $dmgVolume
+
+        if (!(Test-Path $hubPath)) {
+            Write-Error "Failed to install Unity Hub"
+            exit 1
+        }
+
+        sudo chmod +x $hubPath
         sudo mkdir -p "/Library/Application Support/Unity"
-        sudo chmod 777 "/Library/Application Support/Unity"
+        sudo chmod +x "/Library/Application Support/Unity"
     }
     elseif ($IsLinux) {
         Write-Host "::group::Installing Unity Hub on ubuntu..."
@@ -162,6 +169,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo apt update
         sudo apt install -y unityhub
         $hubPath = which unityhub
+        sudo chmod +x $hubPath
     }
     else {
         Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
