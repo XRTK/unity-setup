@@ -28169,19 +28169,23 @@ const main = async () => {
 
         var pwsh = await io.which("pwsh", true);
         var install = __nccwpck_require__.ab + "unity-install.ps1";
-        var exitCode = 0;
+        await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
 
-        try {
-            exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
-        } catch (error) {
-            throw Error(`Unity Installation Failed! ${error.message}`);
+        var editorPath = process.env.UNITY_EDITOR_PATH;
+        core.debug(`UNITY_EDITOR_PATH: ${editorPath}`);
+
+        if (!fs.existsSync(editorPath)) {
+            throw Error(`UNITY_EDITOR_PATH: "${editorPath}" not found`);
         }
 
-        if (exitCode != 0) {
-            throw Error(`Unity Installation Failed! exitCode: ${exitCode}`)
+        var projectPath = process.env.UNITY_PROJECT_PATH;
+        core.debug(`UNITY_PROJECT_PATH: ${projectPath}`);
+
+        if (!fs.existsSync(projectPath)) {
+            throw Error(`UNITY_PROJECT_PATH: "${projectPath}" not found`);
         }
     } catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(`Unity Installation Failed! ${error.message}`);
     }
 }
 
