@@ -28,11 +28,11 @@ jobs:
           - os: ubuntu-latest
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
-            build-targets: 'StandaloneWindows64 Android iOS'
+            build-targets: 'StandaloneWindows64 Android UWP'
           - os: macos-13
-            build-targets: 'StandaloneOSX Android iOS'
+            build-targets: 'StandaloneOSX iOS'
           - os: macos-latest
-            build-targets: 'StandaloneOSX Android iOS VisionOS'
+            build-targets: 'StandaloneOSX iOS VisionOS'
 
     steps:
       - name: checkout self
