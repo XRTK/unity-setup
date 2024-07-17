@@ -63,7 +63,7 @@ if ($IsWindows) {
 elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
-    $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
+    $editorFileEx = "/Unity.app"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
         $modules = @('mac-il2cpp', 'ios', 'android')
@@ -209,13 +209,13 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
 
         # iterate over the editors and check if the version name contains (Intel) for x86_64 or (Apple silicon) for arm64
         foreach ($archEditor in $archEditors) {
+            Write-Host "::debug::$archEditor"
+
             if ($IsMacOS) {
                 if ((($archEditor.Contains("(Intel)") -and $architecture -eq 'x86_64')) -or ($archEditor.Contains("(Apple silicon)") -and $architecture -eq 'arm64')) {
                     # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
                     $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
                 }
-
-                $editorPath = $editorPath -replace '/Unity.app/Contents/MacOS/Unity', '/Unity.app'
             }
             else {
                 Write-Error "Architecture lookup not supported for $($global:PSVersionTable.Platform)"
