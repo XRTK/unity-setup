@@ -312,11 +312,6 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
 
 $envEditorPath = $env:UNITY_EDITOR_PATH
 
-# if mac or linux update permissons for editor installation
-# if ($IsMacOS -or $IsLinux) {
-#     sudo chmod -R 777 $editorRootPath
-# }
-
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
     $editorPath = $editorPath -replace '\\', '/'

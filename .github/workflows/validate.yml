@@ -28,7 +28,7 @@ jobs:
           - os: ubuntu-latest
             build-targets: 'StandaloneLinux64 Android iOS'
           - os: windows-latest
-            build-targets: 'StandaloneWindows64 Android UWP'
+            build-targets: 'StandaloneWindows64 Android WSAPlayer'
           - os: macos-13
             build-targets: 'StandaloneOSX iOS'
           - os: macos-latest
