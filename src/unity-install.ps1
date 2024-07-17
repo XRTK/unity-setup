@@ -158,6 +158,8 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
+        Write-Host "Unity Hub installed at $hubPath"
+
         sudo chmod -R 777 $hubPath
         sudo mkdir -p "/Library/Application Support/Unity"
         sudo chmod -R 777 "/Library/Application Support/Unity"
@@ -311,9 +313,9 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
 $envEditorPath = $env:UNITY_EDITOR_PATH
 
 # if mac or linux update permissons for editor installation
-if ($IsMacOS -or $IsLinux) {
-    sudo chmod -R 777 $editorRootPath
-}
+# if ($IsMacOS -or $IsLinux) {
+#     sudo chmod -R 777 $editorRootPath
+# }
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
