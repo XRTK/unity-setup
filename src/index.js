@@ -113,7 +113,7 @@ const main = async () => {
         try {
             exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
         } catch (error) {
-            core.error(error);
+            throw Error(`Unity Installation Failed! ${error.message}`);
         }
 
         if (exitCode != 0) {
