@@ -63,7 +63,7 @@ if ($IsWindows) {
 elseif ($IsMacOS) {
     $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
     $editorRootPath = "/Applications/Unity/Hub/Editor/"
-    $editorFileEx = "/Unity.app"
+    $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
 
     if ([string]::IsNullOrEmpty($modulesList)) {
         $modules = @('mac-il2cpp', 'ios', 'android')
