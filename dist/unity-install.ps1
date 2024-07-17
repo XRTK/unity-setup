@@ -214,6 +214,8 @@ if (-not [string]::IsNullOrEmpty($architecture)) {
                     # set the editor path based on the editor string that was found using a substring. Split subtring by ',' and take the last element
                     $editorPath = $archEditor.Substring(0, $archEditor.IndexOf(','))
                 }
+
+                $editorPath = $editorPath -replace '/Unity.app/Contents/MacOS/Unity', '/Unity.app'
             }
             else {
                 Write-Error "Architecture lookup not supported for $($global:PSVersionTable.Platform)"
