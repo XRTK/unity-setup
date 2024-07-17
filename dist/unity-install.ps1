@@ -305,6 +305,11 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
 if ($IsLinux -or $IsMacOS) {
     Write-Host "Changing file permissions for $editorPath"
     sudo chmod -R 775 $editorPath
+
+    if ($IsMacOS) {
+        sudo mkdir -p "/Library/Application Support/Unity"
+        sudo chmod -R 775 "/Library/Application Support/Unity"
+    }
 }
 
 $envEditorPath = $env:UNITY_EDITOR_PATH
