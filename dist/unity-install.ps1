@@ -153,8 +153,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo cp -rf $dmgAppPath "/Applications"
         hdiutil unmount $dmgVolume
         sudo mkdir -p "/Library/Application Support/Unity"
-        sudo chmod 775 "/Library/Application Support/Unity"
-        touch '/Library/Application Support/Unity/temp'
+        sudo chmod 777 "/Library/Application Support/Unity"
     }
     elseif ($IsLinux) {
         Write-Host "::group::Installing Unity Hub on ubuntu..."
@@ -298,17 +297,6 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
         if (-not ($modules -contains $module.id)) {
             Write-Host "  > additional module option: " $module.id
         }
-    }
-}
-
-# change installation file permissions for unix systems
-if ($IsLinux -or $IsMacOS) {
-    Write-Host "Changing file permissions for $editorPath"
-    sudo chmod -R 775 $editorPath
-
-    if ($IsMacOS) {
-        sudo mkdir -p "/Library/Application Support/Unity"
-        sudo chmod -R 775 "/Library/Application Support/Unity"
     }
 }
 
