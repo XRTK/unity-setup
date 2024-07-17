@@ -109,20 +109,6 @@ const main = async () => {
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
         await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
-
-        var editorPath = process.env.UNITY_EDITOR_PATH;
-        core.debug(`UNITY_EDITOR_PATH: ${editorPath}`);
-
-        if (!fs.existsSync(editorPath)) {
-            throw Error(`UNITY_EDITOR_PATH: "${editorPath}" not found`);
-        }
-
-        var projectPath = process.env.UNITY_PROJECT_PATH;
-        core.debug(`UNITY_PROJECT_PATH: ${projectPath}`);
-
-        if (!fs.existsSync(projectPath)) {
-            throw Error(`UNITY_PROJECT_PATH: "${projectPath}" not found`);
-        }
     } catch (error) {
         core.setFailed(`Unity Installation Failed! ${error.message}`);
     }
