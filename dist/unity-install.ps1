@@ -158,7 +158,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
-        Write-Host "Unity Hub installed at $hubPath"
+        Write-Host "Unity Hub installed at `"$hubPath`""
 
         sudo chmod -R 777 $hubPath
         sudo mkdir -p "/Library/Application Support/Unity"
@@ -285,7 +285,7 @@ Write-Host "Installed Editors:"
 Invoke-UnityHub editors -i
 
 if (-not (Test-Path -Path $editorPath)) {
-    Write-Error "Failed to validate installed editor path at $editorPath"
+    Write-Error "Failed to validate installed editor path at `"$editorPath`""
     exit 1
 }
 
@@ -318,7 +318,7 @@ if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
     $editorPath = $editorPath -replace '\\', '/'
     "UNITY_EDITOR_PATH=$editorPath" >> $env:GITHUB_ENV
-    Write-Host "UnityEditor path set to: $editorPath"
+    Write-Host "UnityEditor path set to: `"$editorPath`""
 }
 
 exit 0
