@@ -158,9 +158,9 @@ if ( -not (Test-Path -Path "$hubPath") ) {
             exit 1
         }
 
-        sudo chmod +x $hubPath
+        sudo chmod -R 777 $hubPath
         sudo mkdir -p "/Library/Application Support/Unity"
-        sudo chmod +x "/Library/Application Support/Unity"
+        sudo chmod -R 777 "/Library/Application Support/Unity"
     }
     elseif ($IsLinux) {
         Write-Host "::group::Installing Unity Hub on ubuntu..."
@@ -169,7 +169,7 @@ if ( -not (Test-Path -Path "$hubPath") ) {
         sudo apt update
         sudo apt install -y unityhub
         $hubPath = which unityhub
-        sudo chmod +x $hubPath
+        sudo chmod -R 777 $hubPath
     }
     else {
         Write-Error "Unsupported platform: $($global:PSVersionTable.Platform)"
@@ -309,6 +309,11 @@ foreach ($module in (Get-Content -Raw -Path $modulesPath | ConvertFrom-Json -AsH
 }
 
 $envEditorPath = $env:UNITY_EDITOR_PATH
+
+# if mac or linux update permissons for editor installation
+if ($IsMacOS -or $IsLinux) {
+    sudo chmod -R 777 $editorRootPath
+}
 
 if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host ""
