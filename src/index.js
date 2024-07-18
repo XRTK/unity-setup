@@ -27,8 +27,8 @@ const main = async () => {
         core.debug(`buildTargets: ${buildTargets}`);
 
         if (!buildTargets) {
-           modules = core.getInput('modules');
-           var modules = modules.replace(/,/g, '').split(/\s+/);
+            modules = core.getInput('modules');
+            var modules = modules.replace(/,/g, '').split(/\s+/);
         } else {
             const osType = os.type();
             var moduleMap = undefined;
@@ -108,15 +108,9 @@ const main = async () => {
 
         var pwsh = await io.which("pwsh", true);
         var install = path.resolve(__dirname, 'unity-install.ps1');
-        var exitCode = 0;
-
-        exitCode = await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
-
-        if (exitCode != 0) {
-            throw Error(`Unity Installation Failed! exitCode: ${exitCode}`)
-        }
+        await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
     } catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(`Unity Installation Failed! ${error.message}`);
     }
 }
 
@@ -138,7 +132,7 @@ const findFile = async (dir, filePath) => {
     }
 
     if (matchedFiles.length == 0) {
-        for(const subDir of directories) {
+        for (const subDir of directories) {
             const nestedMatches = await findFile(subDir, filePath);
 
             for (const nestedMatch of nestedMatches) {
