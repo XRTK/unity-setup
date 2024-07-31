@@ -368,7 +368,7 @@ if ($modules -contains 'android') {
     $androidSdkPath = "$rootEditorPath/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
     # C:\Program Files\Unity\Hub\Editor\2022.3.36f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmdline-tools\6.0\bin\sdkmanager
-    $versionDirectoryName = Get-ChildItem -Path $androidSdkPath -Directory | Select-Object -First 1
+    $versionDirectoryName = Get-ChildItem -Path "$androidSdkPath" -Directory | Select-Object -First 1
     $androidSdkManagerPath = "$androidSdkPath/$versionDirectoryName/bin/sdkmanager"
     if ($IsWindows) {
         $androidSdkManagerPath += ".bat"
