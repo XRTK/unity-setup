@@ -28069,8 +28069,8 @@ const os = __nccwpck_require__(2037);
 
 const main = async () => {
     try {
-        var modules = '';
-        var architecture = core.getInput('architecture');
+        let modules = undefined;
+        let architecture = core.getInput('architecture');
 
         if (architecture) {
             core.debug(`architecture: ${architecture}`);
@@ -28084,15 +28084,15 @@ const main = async () => {
             }
         }
 
-        var buildTargets = core.getInput('build-targets');
+        const buildTargets = core.getInput('build-targets');
         core.debug(`buildTargets: ${buildTargets}`);
 
         if (!buildTargets) {
             modules = core.getInput('modules');
-            var modules = modules.replace(/,/g, '').split(/\s+/);
+            modules = modules.replace(/,/g, '').split(/\s+/);
         } else {
             const osType = os.type();
-            var moduleMap = undefined;
+            let moduleMap = undefined;
 
             if (osType == 'Linux') {
                 moduleMap = {
@@ -28126,13 +28126,13 @@ const main = async () => {
                 throw Error(`${osType} not supported`);
             }
 
-            var targets = buildTargets.replace(/,/g, '').split(/\s+/);
+            let targets = buildTargets.replace(/,/g, '').split(/\s+/);
             core.debug(`targets: ${targets}`);
 
             for (const target of targets) {
                 core.debug(`target: ${target}`);
 
-                var module = moduleMap[target];
+                let module = moduleMap[target];
 
                 if (module === undefined) {
                     core.warning(`${target} not a valid build-target`);
@@ -28147,12 +28147,14 @@ const main = async () => {
             core.debug(`modules: ${modules}`);
         }
 
-        var unityVersion = core.getInput('unity-version');
-        var versionFilePath = core.getInput('version-file-path');
+        const unityVersion = core.getInput('unity-version');
+        const versionFilePath = core.getInput('version-file-path');
+        let args = undefined;
+
         if (!unityVersion) {
             if (!versionFilePath) {
                 // search for license file version
-                var exeDir = path.resolve(process.cwd());
+                let exeDir = path.resolve(process.cwd());
                 core.debug(`exeDir: ${exeDir}`);
                 versionFilePath = await findFile(exeDir, 'ProjectVersion.txt');
                 core.debug(`version file path: ${versionFilePath}`);
@@ -28161,14 +28163,14 @@ const main = async () => {
             core.debug(`modules: ${modules}`);
             core.debug(`versionFilePath: ${versionFilePath}`);
 
-            var args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
+            args = `-modulesList \"${modules}\" -versionFilePath \"${versionFilePath}\" -architecture \"${architecture}\"`;
         } else {
             core.debug(`unityVersion: ${unityVersion}`);
-            var args = `-modulesList \"${modules}\" -unityVersion \"${unityVersion}\" -architecture \"${architecture}\"`;
+            args = `-modulesList \"${modules}\" -unityVersion \"${unityVersion}\" -architecture \"${architecture}\"`;
         }
 
-        var pwsh = await io.which("pwsh", true);
-        var install = __nccwpck_require__.ab + "unity-install.ps1";
+        const pwsh = await io.which("pwsh", true);
+        const install = __nccwpck_require__.ab + "unity-install.ps1";
         await exec.exec(`"${pwsh}" -Command`, `${install} ${args}`);
     } catch (error) {
         core.setFailed(`Unity Installation Failed! ${error.message}`);

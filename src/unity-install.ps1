@@ -345,11 +345,8 @@ function Run-As {
         $psi.CreateNoWindow = $true;
         $psi.RedirectStandardInput = $true;
         $p = [System.Diagnostics.Process]::Start($psi);
-        $p.StandardInput.WriteLine("y");
         while (-not $p.HasExited) {
-            if ($line -match 'y/N') {
-                $p.StandardInput.WriteLine("y");
-            }
+            $p.StandardInput.WriteLine("y");
             Start-Sleep -Milliseconds 1
         }
 
@@ -382,11 +379,10 @@ if ($modules -contains 'android') {
         exit 1
     }
     Write-Host "Accepting Android SDK Licenses"
-    # run sdkmanager --licenses and redirect input to accept all licenses by sending 'y' to stdin
-
+    Run-As -command "$androidSdkManagerPath" -arguments "--licenses"
     Write-Host "Updating Android SDK"
     Run-As -command "$androidSdkManagerPath" -arguments "--update"
-    $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
+    $projectSettingsPath = "$projectPath/ProjectSettings/ProjectSettings.asset"
     if (-not (Test-Path -Path $projectSettingsPath)) {
         Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
         exit 1
