@@ -8,7 +8,7 @@ const os = require('os');
 
 const main = async () => {
     try {
-        let modules = undefined;
+        let modules = '';
         let architecture = core.getInput('architecture');
 
         if (architecture) {

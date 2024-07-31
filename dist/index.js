@@ -28069,7 +28069,7 @@ const os = __nccwpck_require__(2037);
 
 const main = async () => {
     try {
-        let modules = undefined;
+        let modules = '';
         let architecture = core.getInput('architecture');
 
         if (architecture) {
