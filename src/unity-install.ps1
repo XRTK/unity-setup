@@ -360,7 +360,7 @@ if ($modules -contains 'android') {
     $rootEditorPath = $editorPath -replace '/Unity.exe', ''
     $androidSdkPath = "$rootEditorPath/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
-    # C:\Program Files\Unity\Hub\Editor\2022.3.36f1-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmdline-tools\6.0\bin\sdkmanager
+    # C:\Program Files\Unity\Hub\Editor\2022.3.36f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmdline-tools\6.0\bin\sdkmanager
     $versionDirectoryName = Get-ChildItem -Path $androidSdkPath -Directory | Select-Object -First 1 -ExpandProperty Name
     $androidSdkManagerPath = "$androidSdkPath/$versionDirectoryName/bin/sdkmanager"
     if ($IsWindows) {
@@ -372,9 +372,9 @@ if ($modules -contains 'android') {
         exit 1
     }
     Write-Host "Accepting Android SDK Licenses"
-    Run-As -command "$androidSdkManagerPath" arguments "--licenses"
+    Run-As -command "$androidSdkManagerPath" -arguments "--licenses"
     Write-Host "Updating Android SDK"
-    Run-As -command "$androidSdkManagerPath" arguments "--update"
+    Run-As -command "$androidSdkManagerPath" -arguments "--update"
     $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
     if (-not (Test-Path -Path $projectSettingsPath)) {
         Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
@@ -383,7 +383,7 @@ if ($modules -contains 'android') {
     $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
     if ($targetSdkVersion -ne 0) {
         Write-Host "Installing Android SDK Platform $targetSdkVersion"
-        Run-As -command "$androidSdkManagerPath" arguments "`"platform-tools`" `"platforms;android-$targetSdkVersion`""
+        Run-As -command "$androidSdkManagerPath" -arguments "`"platform-tools`" `"platforms;android-$targetSdkVersion`""
     }
 }
 
