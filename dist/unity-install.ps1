@@ -344,9 +344,21 @@ function Run-As {
         $psi.Arguments = $arguments;
         $psi.CreateNoWindow = $true;
         $psi.RedirectStandardInput = $true;
+        $psi.RedirectStandardOutput = $true;
         $p = [System.Diagnostics.Process]::Start($psi);
-        $p.StandardInput.WriteLine("y");
-        $p.WaitForExit();
+        while (-not $p.HasExited) {
+            # read the last line of the output and if it contains 'y/N' then write 'y' to stdin
+            $line = $p.StandardOutput.ReadLine()
+            Write-Host $line
+            if ($line -like "*y/N*") {
+                $p.StandardInput.WriteLine("y");
+            }
+        }
+
+        if ($p.ExitCode -ne 0) {
+            Write-Error "Failed to execute command `"$command`" with exit code: $($p.ExitCode)"
+            exit 1
+        }
     }
     else {
         Write-Error "Administrative privileges required"
