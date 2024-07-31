@@ -357,12 +357,22 @@ function Run {
 
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
+    Write-Host "Installing Android SDK"
+    Wire-Host "Unity Editor Path: `"$editorPath`""
     if (-not $IsMacOS) {
         $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName -replace '\\', '/'
+        if (-not (Test-Path -Path "$rootEditorPath")) {
+            Write-Error "Failed to resolve root editor path at `"$rootEditorPath`""
+            exit 1
+        }
         $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     else {
         $rootEditorPath = (Get-Item $editorPath).Directory.Parent.Parent.Parent.FullName
+        if (-not (Test-Path -Path "$rootEditorPath")) {
+            Write-Error "Failed to resolve root editor path at `"$rootEditorPath`""
+            exit 1
+        }
         $androidSdkPath = "$rootEditorPath/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     if (-not (Test-Path -Path "$androidSdkPath")) {

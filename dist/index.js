@@ -28126,7 +28126,7 @@ const main = async () => {
                 throw Error(`${osType} not supported`);
             }
 
-            let targets = buildTargets.replace(/,/g, '').split(/\s+/);
+            const targets = buildTargets.replace(/,/g, '').split(/\s+/);
             core.debug(`targets: ${targets}`);
 
             for (const target of targets) {
