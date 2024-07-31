@@ -330,41 +330,38 @@ if ([String]::IsNullOrEmpty($envUnityHubPath)) {
     Write-Host "UnityHub path set to: `"$hubPath`""
 }
 
-function Run-As {
+function Run {
     param(
         [string]$command,
         [string]$arguments
     )
 
-    if ((New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Host "`"$command`" $arguments"
-        $psi = New-Object System.Diagnostics.ProcessStartInfo;
-        $psi.FileName = "$command";
-        $psi.UseShellExecute = $false;
-        $psi.Arguments = $arguments;
-        $psi.CreateNoWindow = $true;
-        $psi.RedirectStandardInput = $true;
-        $p = [System.Diagnostics.Process]::Start($psi);
-        while (-not $p.HasExited) {
-            $p.StandardInput.WriteLine("y");
-            Start-Sleep -Milliseconds 1
-        }
-
-        if ($p.ExitCode -ne 0) {
-            Write-Error "Failed to execute command `"$command`" with exit code: $($p.ExitCode)"
-            exit 1
-        }
+    Write-Host "`"$command`" $arguments"
+    $psi = New-Object System.Diagnostics.ProcessStartInfo;
+    $psi.FileName = "$command";
+    $psi.UseShellExecute = $false;
+    $psi.Arguments = $arguments;
+    $psi.CreateNoWindow = $true;
+    $psi.RedirectStandardInput = $true;
+    $p = [System.Diagnostics.Process]::Start($psi);
+    while (-not $p.HasExited) {
+        $p.StandardInput.WriteLine("y");
+        Start-Sleep -Milliseconds 1
     }
-    else {
-        Write-Error "Administrative privileges required"
+
+    if ($p.ExitCode -ne 0) {
+        Write-Error "Failed to execute command `"$command`" with exit code: $($p.ExitCode)"
         exit 1
     }
 }
 
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
-    # directory of the unity editor
-    $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
+    if (-not $IsMacOS) {
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
+    } else{
+        $rootEditorPath = $editorPath
+    }
     $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
     # C:\Program Files\Unity\Hub\Editor\2022.3.36f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmdline-tools\6.0\bin\sdkmanager
@@ -379,9 +376,9 @@ if ($modules -contains 'android') {
         exit 1
     }
     Write-Host "Accepting Android SDK Licenses"
-    Run-As -command "$androidSdkManagerPath" -arguments "--licenses"
+    Run -command "$androidSdkManagerPath" -arguments "--licenses"
     Write-Host "Updating Android SDK"
-    Run-As -command "$androidSdkManagerPath" -arguments "--update"
+    Run -command "$androidSdkManagerPath" -arguments "--update"
     $projectSettingsPath = "$projectPath/ProjectSettings/ProjectSettings.asset"
     if (-not (Test-Path -Path $projectSettingsPath)) {
         Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
@@ -390,7 +387,7 @@ if ($modules -contains 'android') {
     $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
     if ($targetSdkVersion -ne 0) {
         Write-Host "Installing Android SDK Platform $targetSdkVersion"
-        Run-As -command "$androidSdkManagerPath" -arguments "`"platform-tools`" `"platforms;android-$targetSdkVersion`""
+        Run -command "$androidSdkManagerPath" -arguments "`"platform-tools`" `"platforms;android-$targetSdkVersion`""
     }
 }
 
