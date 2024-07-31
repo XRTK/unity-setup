@@ -30,9 +30,9 @@ jobs:
           - os: windows-latest
             build-targets: 'StandaloneWindows64 Android WSAPlayer'
           - os: macos-13
-            build-targets: 'StandaloneOSX iOS'
+            build-targets: 'StandaloneOSX Android iOS'
           - os: macos-latest
-            build-targets: 'StandaloneOSX iOS VisionOS'
+            build-targets: 'StandaloneOSX Android iOS VisionOS'
 
     steps:
       - name: checkout self

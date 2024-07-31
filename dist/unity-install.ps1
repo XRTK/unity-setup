@@ -321,4 +321,88 @@ if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host "UnityEditor path set to: `"$editorPath`""
 }
 
+$envUnityHubPath = $env:UNITY_HUB_PATH
+
+if ([String]::IsNullOrEmpty($envUnityHubPath)) {
+    Write-Host ""
+    $hubPath = $hubPath -replace '\\', '/'
+    "UNITY_HUB_PATH=$hubPath" >> $env:GITHUB_ENV
+    Write-Host "UnityHub path set to: `"$hubPath`""
+}
+
+function Run {
+    param(
+        [string]$command,
+        [string]$arguments
+    )
+
+    Write-Host "`"$command`" $arguments"
+    $psi = New-Object System.Diagnostics.ProcessStartInfo;
+    $psi.FileName = "$command";
+    $psi.UseShellExecute = $false;
+    $psi.Arguments = $arguments;
+    $psi.CreateNoWindow = $true;
+    $psi.RedirectStandardInput = $true;
+    $p = [System.Diagnostics.Process]::Start($psi);
+    while (-not $p.HasExited) {
+        $p.StandardInput.WriteLine("y");
+        Start-Sleep -Milliseconds 1
+    }
+
+    if ($p.ExitCode -ne 0) {
+        Write-Error "Failed to execute command `"$command`" with exit code: $($p.ExitCode)"
+        exit 1
+    }
+}
+
+# if modules contains android then attempt to install android sdk
+if ($modules -contains 'android') {
+    Write-Host "Installing Android SDK"
+    Write-Host "Unity Editor Path: `"$editorPath`""
+    if (-not $IsMacOS) {
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName -replace '\\', '/'
+        if (-not (Test-Path -Path "$rootEditorPath")) {
+            Write-Error "Failed to resolve root editor path at `"$rootEditorPath`""
+            exit 1
+        }
+        $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
+    }
+    else {
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.Parent.Parent.FullName
+        if (-not (Test-Path -Path "$rootEditorPath")) {
+            Write-Error "Failed to resolve root editor path at `"$rootEditorPath`""
+            exit 1
+        }
+        $androidSdkPath = "$rootEditorPath/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
+    }
+    if (-not (Test-Path -Path "$androidSdkPath")) {
+        Write-Error "Failed to resolve Android SDK cmdline-tools path at `"$androidSdkPath`""
+        exit 1
+    }
+    $versionDirectory = Get-ChildItem -Path "$androidSdkPath" -Directory | Select-Object -First 1 -ExpandProperty FullName
+    $androidSdkManagerPath = "$versionDirectory/bin/sdkmanager"
+    if ($IsWindows) {
+        $androidSdkManagerPath += ".bat"
+    }
+    Write-Host "Android SDK Manager Path: `"$androidSdkManagerPath`""
+    if (-not (Test-Path -Path "$androidSdkManagerPath")) {
+        Write-Error "Failed to resolve Android SDK Manager path at `"$androidSdkManagerPath`""
+        exit 1
+    }
+    Write-Host "Accepting Android SDK Licenses"
+    Run -command "$androidSdkManagerPath" -arguments "--licenses"
+    Write-Host "Updating Android SDK"
+    Run -command "$androidSdkManagerPath" -arguments "--update"
+    $projectSettingsPath = "$projectPath/ProjectSettings/ProjectSettings.asset"
+    if (-not (Test-Path -Path $projectSettingsPath)) {
+        Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
+        exit 1
+    }
+    $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
+    if ($targetSdkVersion -ne 0) {
+        Write-Host "Installing Android SDK Platform $targetSdkVersion"
+        Run -command "$androidSdkManagerPath" -arguments "`"platform-tools`" `"platforms;android-$targetSdkVersion`""
+    }
+}
+
 exit 0
