@@ -358,14 +358,14 @@ function Run {
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
     if (-not $IsMacOS) {
-        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName.Replace('\\', '/')
         $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     else {
         $rootEditorPath = (Get-Item $editorPath).Directory.Parent.Parent.Parent.Parent.FullName
         $androidSdkPath = "$rootEditorPath/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
-    if (-not (Test-Path -Path $androidSdkPath)) {
+    if (-not (Test-Path -Path "$androidSdkPath")) {
         Write-Error "Failed to resolve Android SDK cmdline-tools path at `"$androidSdkPath`""
         exit 1
     }
@@ -375,7 +375,7 @@ if ($modules -contains 'android') {
         $androidSdkManagerPath += ".bat"
     }
     Write-Host "Android SDK Manager Path: `"$androidSdkManagerPath`""
-    if (-not (Test-Path -Path $androidSdkManagerPath)) {
+    if (-not (Test-Path -Path "$androidSdkManagerPath")) {
         Write-Error "Failed to resolve Android SDK Manager path at `"$androidSdkManagerPath`""
         exit 1
     }
