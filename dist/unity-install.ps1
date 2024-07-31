@@ -321,4 +321,45 @@ if ([String]::IsNullOrEmpty($envEditorPath)) {
     Write-Host "UnityEditor path set to: `"$editorPath`""
 }
 
+$envUnityHubPath = $env:UNITY_HUB_PATH
+
+if ([String]::IsNullOrEmpty($envUnityHubPath)) {
+    Write-Host ""
+    $hubPath = $hubPath -replace '\\', '/'
+    "UNITY_HUB_PATH=$hubPath" >> $env:GITHUB_ENV
+    Write-Host "UnityHub path set to: `"$hubPath`""
+}
+
+# if modules contains android then attempt to install android sdk
+if ($modules -contains 'android') {
+    $androidSdkPath = $editorPath + "/Data/PlaybackEngines/AndroidPlayer/SDK"
+    # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
+    $androidSdkManagerPath = Get-ChildItem -Path "$androidSdkPath/cmdline-tools" | Select-Object -First 1
+    $androidSdkManagerPath = $androidSdkManagerPath.FullName + "/bin/sdkmanager"
+    # if windows then add .bat
+    if ($IsWindows) {
+        $androidSdkManagerPath += ".bat"
+    }
+
+    Write-Host "Android SDK Manager Path: $androidSdkManagerPath"
+
+    # accept licenses
+    Write-Host "Accepting Android SDK Licenses"
+    ."$androidSdkManagerPath --licenses"
+
+    # update sdk
+    Write-Host "Updating Android SDK"
+    ."$androidSdkManagerPath --update"
+
+    # check project settings for "AndroidTargetSdkVersion: <int>"
+    $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
+    $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
+
+    # if non 0 then attempt to install it
+    if ($targetSdkVersion -ne 0) {
+        Write-Host "Installing Android SDK Platform $targetSdkVersion"
+        ."$androidSdkManagerPath --install platform-tools platform;android-$targetSdkVersion"
+    }
+}
+
 exit 0
