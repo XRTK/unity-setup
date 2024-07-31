@@ -347,12 +347,13 @@ function Run-As {
         $psi.RedirectStandardOutput = $true;
         $p = [System.Diagnostics.Process]::Start($psi);
         while (-not $p.HasExited) {
-            # read the last line of the output and if it contains 'y/N' then write 'y' to stdin
             $line = $p.StandardOutput.ReadLine()
             Write-Host $line
-            if ($line -like "*y/N*") {
+            if ($line -match 'y/N') {
                 $p.StandardInput.WriteLine("y");
             }
+            # sleep for a ms
+            Start-Sleep -Milliseconds 1
         }
 
         if ($p.ExitCode -ne 0) {
