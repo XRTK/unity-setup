@@ -350,9 +350,9 @@ if ($modules -contains 'android') {
         exit 1
     }
     Write-Host "Accepting Android SDK Licenses"
-    ."`"$androidSdkManagerPath`" --licenses"
+    & $androidSdkManagerPath --licenses
     Write-Host "Updating Android SDK"
-    ."`"$androidSdkManagerPath`" --update"
+    & $androidSdkManagerPath --update
     $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
     if (-not (Test-Path -Path $projectSettingsPath)) {
         Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
@@ -361,7 +361,7 @@ if ($modules -contains 'android') {
     $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
     if ($targetSdkVersion -ne 0) {
         Write-Host "Installing Android SDK Platform $targetSdkVersion"
-        ."`"$androidSdkManagerPath`" platform-tools platform;android-$targetSdkVersion"
+        & $androidSdkManagerPath "platform-tools" "platform;android-$targetSdkVersion"
     }
 }
 
