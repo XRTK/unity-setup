@@ -344,15 +344,12 @@ function Run-As {
         $psi.Arguments = $arguments;
         $psi.CreateNoWindow = $true;
         $psi.RedirectStandardInput = $true;
-        $psi.RedirectStandardOutput = $true;
         $p = [System.Diagnostics.Process]::Start($psi);
+        $p.StandardInput.WriteLine("y");
         while (-not $p.HasExited) {
-            $line = $p.StandardOutput.ReadLine()
-            Write-Host $line
             if ($line -match 'y/N') {
                 $p.StandardInput.WriteLine("y");
             }
-            # sleep for a ms
             Start-Sleep -Milliseconds 1
         }
 
@@ -385,7 +382,8 @@ if ($modules -contains 'android') {
         exit 1
     }
     Write-Host "Accepting Android SDK Licenses"
-    Run-As -command "$androidSdkManagerPath" -arguments "--licenses"
+    # run sdkmanager --licenses and redirect input to accept all licenses by sending 'y' to stdin
+
     Write-Host "Updating Android SDK"
     Run-As -command "$androidSdkManagerPath" -arguments "--update"
     $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
