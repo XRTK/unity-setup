@@ -359,12 +359,12 @@ function Run {
 if ($modules -contains 'android') {
     if (-not $IsMacOS) {
         $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
-    } else{
-        $rootEditorPath = $editorPath
+        $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
-    # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
-    # C:/Program Files/Unity/Hub/Editor/2022.3.36f1/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/6.0/bin/sdkmanager
-    $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
+    else {
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
+        $androidSdkPath = "$rootEditorPath/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
+    }
     if (-not (Test-Path -Path $androidSdkPath)) {
         Write-Error "Failed to resolve Android SDK cmdline-tools path at `"$androidSdkPath`""
         exit 1
