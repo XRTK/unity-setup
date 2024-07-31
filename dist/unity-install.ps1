@@ -358,7 +358,7 @@ function Run {
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
     if (-not $IsMacOS) {
-        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName.Replace('\\', '/')
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName -replace '\\', '/'
         $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     else {
