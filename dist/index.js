@@ -28148,7 +28148,7 @@ const main = async () => {
         }
 
         const unityVersion = core.getInput('unity-version');
-        const versionFilePath = core.getInput('version-file-path');
+        let versionFilePath = core.getInput('version-file-path');
         let args = undefined;
 
         if (!unityVersion) {
