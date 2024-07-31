@@ -358,7 +358,7 @@ function Run {
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
     Write-Host "Installing Android SDK"
-    Wire-Host "Unity Editor Path: `"$editorPath`""
+    Write-Host "Unity Editor Path: `"$editorPath`""
     if (-not $IsMacOS) {
         $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName -replace '\\', '/'
         if (-not (Test-Path -Path "$rootEditorPath")) {
