@@ -333,7 +333,7 @@ if ([String]::IsNullOrEmpty($envUnityHubPath)) {
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
     # directory of the unity editor
-    $rootEditorPath = $env:UNITY_EDITOR_PATH -replace '/Unity.exe', ''
+    $rootEditorPath = $editorPath -replace '/Unity.exe', ''
     $androidSdkPath = "$rootEditorPath/Data/PlaybackEngines/AndroidPlayer/SDK"
     # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
     $versionDirectoryName = Get-ChildItem -Path $androidSdkPath -Directory | Select-Object -First 1 -ExpandProperty Name
