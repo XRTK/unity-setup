@@ -342,20 +342,25 @@ if ($modules -contains 'android') {
     if ($IsWindows) {
         $androidSdkManagerPath += ".bat"
     }
-    Write-Host "Android SDK Manager Path: '$androidSdkManagerPath'"
-    # accept licenses
+    Write-Host "Android SDK Manager Path: `"$androidSdkManagerPath`""
+    # test path
+    if (-not (Test-Path -Path $androidSdkManagerPath)) {
+        Write-Error "Failed to resolve Android SDK Manager path at `"$androidSdkManagerPath`""
+        exit 1
+    }
     Write-Host "Accepting Android SDK Licenses"
-    ."'$androidSdkManagerPath' --licenses"
-    # update sdk
+    ."`"$androidSdkManagerPath`" --licenses"
     Write-Host "Updating Android SDK"
-    ."'$androidSdkManagerPath' --update"
-    # check project settings for "AndroidTargetSdkVersion: <int>"
+    ."`"$androidSdkManagerPath`" --update"
     $projectSettingsPath = $env:UNITY_PROJECT_PATH + "/ProjectSettings/ProjectSettings.asset"
+    if (-not (Test-Path -Path $projectSettingsPath)) {
+        Write-Error "Failed to resolve project settings path at `"$projectSettingsPath`""
+        exit 1
+    }
     $targetSdkVersion = Get-Content -Path $projectSettingsPath | Select-String -Pattern "AndroidTargetSdkVersion: \d+" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value -replace "AndroidTargetSdkVersion: ", "" }
-    # if non 0 then attempt to install it
     if ($targetSdkVersion -ne 0) {
         Write-Host "Installing Android SDK Platform $targetSdkVersion"
-        ."'$androidSdkManagerPath' --install platform-tools platform;android-$targetSdkVersion"
+        ."`"$androidSdkManagerPath`" platform-tools platform;android-$targetSdkVersion"
     }
 }
 
