@@ -369,8 +369,8 @@ if ($modules -contains 'android') {
         Write-Error "Failed to resolve Android SDK cmdline-tools path at `"$androidSdkPath`""
         exit 1
     }
-    $versionDirectoryName = Get-ChildItem -Path "$androidSdkPath" -Directory | Select-Object -First 1
-    $androidSdkManagerPath = "$androidSdkPath/$versionDirectoryName/bin/sdkmanager"
+    $versionDirectory = Get-ChildItem -Path "$androidSdkPath" -Directory | Select-Object -First 1 -ExpandProperty FullName
+    $androidSdkManagerPath = "$versionDirectory/bin/sdkmanager"
     if ($IsWindows) {
         $androidSdkManagerPath += ".bat"
     }
