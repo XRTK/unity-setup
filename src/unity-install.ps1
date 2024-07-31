@@ -364,7 +364,7 @@ function Run-As {
 # if modules contains android then attempt to install android sdk
 if ($modules -contains 'android') {
     # directory of the unity editor
-    $rootEditorPath = $editorPath -replace '/Unity.exe', ''
+    $rootEditorPath = (Get-Item $editorPath).Directory.Parent.FullName
     $androidSdkPath = "$rootEditorPath/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     # try to resolve the android cmdline tools path. The version isn't always latest. Just get first directory
     # C:\Program Files\Unity\Hub\Editor\2022.3.36f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmdline-tools\6.0\bin\sdkmanager
