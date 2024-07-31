@@ -362,7 +362,7 @@ if ($modules -contains 'android') {
         $androidSdkPath = "$rootEditorPath/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     else {
-        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.Parent.Parent.Parent.FullName
+        $rootEditorPath = (Get-Item $editorPath).Directory.Parent.Parent.Parent.FullName
         $androidSdkPath = "$rootEditorPath/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools"
     }
     if (-not (Test-Path -Path "$androidSdkPath")) {
