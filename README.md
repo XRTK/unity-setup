@@ -1,5 +1,8 @@
 # unity-setup
 
+> [!IMPORTANT]
+> The action is no longer maintained and has been moved to [buildalon/unity-setup](https://github.com/buildalon/unity-setup)
+
 An atomic GitHub action to download and install the Unity Editor for runners.
 
 * If a valid installation is found, then installation is skipped.
